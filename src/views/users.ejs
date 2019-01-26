@@ -1,0 +1,171 @@
+<% include partials/_header %>
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+
+<div class="container">
+    <div class="top-acc">
+        <h3 class="pull-left">User list</h3>
+        <button id="add_user" class="add_user btn btn-primary pull-right">
+            <i class="fa fa-plus-circle"></i> Add new user
+        </button>
+        <div class="clearfix"></div>
+    </div>
+    <div class="table-responsive">
+        <table id="tbl-users" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Date</th>
+                    <th>Rol</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(var i = 0; i < data.length; i++) { %>
+                <tr>
+                    <td align="center">
+                        <%= data[i].id %>
+                    </td>
+                    <td>
+                        <%= data[i].name %>
+                    </td>
+                    <td>
+                        <%= data[i].email %>
+                    </td>
+                    <td>
+                        <%= data[i].phone %>
+                    </td>
+                    <td>
+                        <%= data[i].createdate.toLocaleString() %>
+                    </td>
+                    <td align="center">
+                        <%= data[i].isadmin %>
+                    </td>
+                    <td align="center">
+                        <button type="button" class="btn btn-primary btn-edit"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                        <button type="button" class="btn btn-danger btn-delete"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+
+                <% } %>
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Date date</th>
+                    <th>Rol</th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">System user</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="txtName">Name</label>
+                        <input type="text" class="form-control" id="txtName" placeholder="Fulln Name">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="txtPhone">Phone</label>
+                        <input type="text" class="form-control" id="txtPhone" placeholder="Phone">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="txtEmail">Email</label>
+                        <input type="text" class="form-control" id="txtEmail" placeholder="Email">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="txtPassword">Password</label>
+                        <input type="password" class="form-control" id="txtPassword" placeholder="Password">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label class="label-block">Select a Rol for this user</label>
+                        <select id="cboRol">
+                            <option value="1">Administrator</option>
+                            <option value="0">Techician</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary btn-save">Save user</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+<% include partials/_footer %>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#tbl-users').DataTable({
+            "order": [[0, "desc"]]
+        });
+
+        $('#add_user').click(function(){
+            $('.modal-title').text('Add new user');
+            $('#userModal').modal();
+        });
+        
+        $('.btn-save').click(function(){
+            var txtName = $('#txtName').val().trim();
+            var txtPhone = $('#txtPhone').val().trim();
+            var txtEmail = $('#txtEmail').val().trim();
+            var txtPassword = $('#txtPassword').val();
+            var cboRol = $('#cboRol :selected').val();
+
+            var data = {
+                name: txtName,
+                phone: txtPhone,
+                password: txtPassword,
+                email: txtEmail,
+                isadmin: cboRol
+            }
+
+            if (txtName != '' && txtPhone != '' && txtPassword != '' && txtEmail != '') {
+                $.ajax({
+                    'url': '/adduser',
+                    'method': 'POST',
+                    'data': data,
+                    'dataType': 'json',
+                    success: function (res) {
+                        console.log(res);
+                        $('#userModal').modal('hide');
+                    },
+                    beforeSend: function () {
+
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }else{
+
+            }
+
+        });
+    });
+</script>
