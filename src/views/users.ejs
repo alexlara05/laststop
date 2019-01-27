@@ -3,9 +3,9 @@
 
 <div class="container">
     <div class="top-acc">
-        <h3 class="pull-left">User list</h3>
+        <h3 class="pull-left">Usuarios del sistema</h3>
         <button id="add_user" class="add_user btn btn-primary pull-right">
-            <i class="fa fa-plus-circle"></i> Add new user
+            <i class="fa fa-plus-circle"></i> Agregar usuario
         </button>
         <div class="clearfix"></div>
     </div>
@@ -14,10 +14,10 @@
             <thead>
                 <tr>
                     <th>Id</th>
-                    <th>Name</th>
+                    <th>Nombre</th>
                     <th>Email</th>
-                    <th>Phone</th>
-                    <th>Date</th>
+                    <th>Teléfono</th>
+                    <th>Fecha</th>
                     <th>Rol</th>
                     <th></th>
                 </tr>
@@ -41,11 +41,19 @@
                         <%= data[i].createdate.toLocaleString() %>
                     </td>
                     <td align="center">
-                        <%= data[i].isadmin %>
+                        <% if(data[i].isadmin == 1){ %>
+                        <span>Admin</span>
+                        <% }else if (data[i].isadmin == 0){ %>
+                        <span>Tech</span>
+                        <% }else{ %>
+                        data[i].isadmin
+                        <% } %>
                     </td>
                     <td align="center">
-                        <button type="button" class="btn btn-primary btn-edit"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-                        <button type="button" class="btn btn-danger btn-delete"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                        <a href="/edit_user/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
+                                class="fa fa-pencil" aria-hidden="true"></i></a>
+                        <a href="/delete_user/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-danger btn-delete"><i
+                                class="fa fa-trash" aria-hidden="true"></i></a>
                     </td>
                 </tr>
 
@@ -55,10 +63,10 @@
             <tfoot>
                 <tr>
                     <th>Id</th>
-                    <th>Name</th>
+                    <th>Nombre</th>
                     <th>Email</th>
-                    <th>Phone</th>
-                    <th>Date date</th>
+                    <th>Teléfono</th>
+                    <th>Fecha</th>
                     <th>Rol</th>
                     <th></th>
                 </tr>
@@ -67,55 +75,57 @@
     </div>
 
 </div>
-
+<input type="hidden" id="mode">
+<input type="hidden" id="userid">
 <!-- Modal -->
 <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModal" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">System user</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+                <h5 class="modal-title">Usuario del sistema</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label for="txtName">Name</label>
-                        <input type="text" class="form-control" id="txtName" placeholder="Fulln Name">
+                        <label for="txtName">Nombre</label>
+                        <input type="text" class="form-control" id="txtName" placeholder="Nombre completo">
                     </div>
                     <div class="form-group col-md-6">
-                        <label for="txtPhone">Phone</label>
-                        <input type="text" class="form-control" id="txtPhone" placeholder="Phone">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="txtEmail">Email</label>
-                        <input type="text" class="form-control" id="txtEmail" placeholder="Email">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="txtPassword">Password</label>
-                        <input type="password" class="form-control" id="txtPassword" placeholder="Password">
+                        <label for="txtPhone">Teléfono</label>
+                        <input type="number" class="form-control" id="txtPhone" placeholder="Teléfono">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label class="label-block">Select a Rol for this user</label>
+                        <label for="txtEmail">Correo electronico</label>
+                        <input type="text" class="form-control" id="txtEmail" placeholder="Correo electronico">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="txtPassword">Contraseña</label>
+                        <input type="password" class="form-control" id="txtPassword" placeholder="Contraseña">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label class="label-block">Rol de usuario</label>
                         <select id="cboRol">
-                            <option value="1">Administrator</option>
-                            <option value="0">Techician</option>
+                            <option value="0">Técnico</option>
+                            <option value="1">Administrador</option>
                         </select>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary btn-save">Save user</button>
+                <img id="loading" src="/public/images/loading.gif" alt="cargando" style="display: none; width: 100px; height: 36px;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary btn-save">Guardar usuario</button>
             </div>
-          </div>
         </div>
-      </div>
+    </div>
+</div>
 
 <% include partials/_footer %>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
@@ -125,12 +135,14 @@
             "order": [[0, "desc"]]
         });
 
-        $('#add_user').click(function(){
-            $('.modal-title').text('Add new user');
+        $('#add_user').click(function () {
+            $('.modal-title').text('Crear nuevo usuario');
+            $('#mode').val('1');
             $('#userModal').modal();
         });
-        
-        $('.btn-save').click(function(){
+
+        $('.btn-save').click(function () {
+            var loader = $('#loading');
             var txtName = $('#txtName').val().trim();
             var txtPhone = $('#txtPhone').val().trim();
             var txtEmail = $('#txtEmail').val().trim();
@@ -144,28 +156,97 @@
                 email: txtEmail,
                 isadmin: cboRol
             }
+            var mode = $('#mode').val();
+            if (txtName == '' && txtPhone == '' && txtPassword == '' && txtEmail == '') {
+                alert('Debes completar todos los campos');
+                return;
+            }
+            var url = '';
+            if (mode == 1) { // Add
+                url = '/add_user';
+            } else if (mode == 2) { // Edit
+                url = '/edit_user/' + $('#userid').val();
+            }
 
-            if (txtName != '' && txtPhone != '' && txtPassword != '' && txtEmail != '') {
-                $.ajax({
-                    'url': '/adduser',
-                    'method': 'POST',
-                    'data': data,
-                    'dataType': 'json',
-                    success: function (res) {
-                        console.log(res);
+            $.ajax({
+                'url': url,
+                'method': 'POST',
+                'data': data,
+                'dataType': 'json',
+                success: function (response) {
+                    loader.css('display', 'none');
+
+                    if (response.userexist) {
+                        alert(response.message);
+                    } else {
                         $('#userModal').modal('hide');
-                    },
-                    beforeSend: function () {
+                        location.reload();
+                    }
+                    console.log(response);
+                },
+                beforeSend: function () {
+                    loader.css('display', 'block');
+                },
+                error: function (err) {
+                    loader.css('display', 'none');
+                    console.log(err);
+                }
+            });
 
+        });
+
+        $('.btn-delete').click(function (e) {
+            e.preventDefault();
+            var option = confirm("Seguro que quieres eliminar este usuario");
+            if (option) {
+                $.ajax({
+                    'url': '/delete_user/' + $(this).attr('uid'),
+                    'method': 'POST',
+                    'dataType': 'json',
+                    success: function (response) {
+                        alert(response.message);
+                        location.reload();
                     },
                     error: function (err) {
+                        alert('Ocurrió un error por favor intente de nuevo');
                         console.log(err);
                     }
                 });
-            }else{
-
             }
+        });
+
+        $('.btn-edit').click(function (e) {
+            e.preventDefault();
+            $('#mode').val(2);
+            $('#userid').val($(this).attr('uid'));
+            $('.modal-title').text('Editar usuario');
+            $('#userModal').modal();
+
+            $.ajax({
+                'url': '/edit_user/' + $(this).attr('uid'),
+                'method': 'GET',
+                'dataType': 'json',
+                success: function (response) {
+                    var txtName = $('#txtName').val(response.data[0].name);
+                    var txtPhone = $('#txtPhone').val(response.data[0].phone);
+                    var txtEmail = $('#txtEmail').val(response.data[0].email);
+                    var txtPassword = $('#txtPassword');
+                    var cboRol = $('#cboRol').val(response.data[0].isadmin);
+                    console.log(response)
+                },
+                error: function (err) {
+                    alert('Ocurrió un error por favor intente de nuevo');
+                    console.log(err);
+                }
+            });
 
         });
+    });
+
+    $('#userModal').on('hidden.bs.modal', function () {
+        var txtName = $('#txtName').val('');
+        var txtPhone = $('#txtPhone').val('');
+        var txtEmail = $('#txtEmail').val('');
+        var txtPassword = $('#txtPassword').val('');
     });
 </script>

@@ -33,39 +33,46 @@
 
       <div class="collapse navbar-collapse" id="navbarColor01">
         <ul class="navbar-nav mr-auto">
+          <% if (userrol != 0){ %>
           <li class="nav-item active">
             <a class="nav-link" href="/"><i class="fa fa-bar-chart" aria-hidden="true"></i>
-              Summary <span class="sr-only">(current)</span></a>
+              Resumen <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fa fa-wrench" aria-hidden="true"></i>
-              Repairs</a>
+            <a class="nav-link" href="/repairs"><i class="fa fa-wrench" aria-hidden="true"></i>
+              Reparaciones</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#"><i class="fa fa-cart-plus" aria-hidden="true"></i>
-              Sales</a>
+              Ventas</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
-              <i class="fa fa-cogs" aria-hidden="true"></i> Application
+              <i class="fa fa-cogs" aria-hidden="true"></i> Aplicación
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/users"><i class="fa fa-users" aria-hidden="true"></i> Users</a>
+              <a class="dropdown-item" href="/users"><i class="fa fa-users" aria-hidden="true"></i> Usuarios</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#"><i class="fa fa-plug" aria-hidden="true"></i>
-                Devices</a>
+                Dispositivos</a>
               <a class="dropdown-item" href="#"><i class="fa fa-plug" aria-hidden="true"></i>
-                Devices types</a>
+                Tipos de dispositivos</a>
               <a class="dropdown-item" href="#"><i class="fa fa-bandcamp" aria-hidden="true"></i>
-                Brands</a>
+                Marcas</a>
               <a class="dropdown-item" href="#"><i class="fa fa-exclamation-circle" aria-hidden="true"></i>
-                Devices failures</a>
+                Fallas de dispositivos</a>
             </div>
           </li>
+          <% }else{ %>
+          <li class="nav-item">
+            <a href="/trepairs" class="nav-link"><i class="fa fa-sign-out" aria-hidden="true"></i>
+              Reparaciones</a>
+          </li>
+          <% } %>
           <li class="nav-item">
             <a href="/logout" class="nav-link"><i class="fa fa-sign-out" aria-hidden="true"></i>
-              Log out</a>
+              Salir</a>
           </li>
         </ul>
       </div>
