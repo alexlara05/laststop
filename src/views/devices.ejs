@@ -3,9 +3,9 @@
 
 <div class="container">
     <div class="top-acc">
-        <h3 class="pull-left">Dispositivos, Electrodomesticos</h3>
+        <h3 class="pull-left">Electrodomesticos</h3>
         <button id="add_device" class="add_device btn btn-primary pull-right">
-            <i class="fa fa-plus-circle"></i> Agregar dispositivo
+            <i class="fa fa-plus-circle"></i> Agregar electrodomestico
         </button>
         <div class="clearfix"></div>
     </div>
@@ -54,7 +54,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Dispositivo del sistema</h5>
+                <h5 class="modal-title">Electrodomesticos</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -74,7 +74,7 @@
             <div class="modal-footer">
                 <img id="loading" src="/public/images/loading.gif" alt="cargando" style="display: none; width: 100px; height: 36px;">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary btn-save">Guardar dispositivo</button>
+                <button type="button" class="btn btn-primary btn-save">Guardar electrodomestico</button>
             </div>
         </div>
     </div>
@@ -94,7 +94,7 @@
         });
 
         $('#add_device').click(function () {
-            $('.modal-title').text('Crear nuevo dispositivo');
+            $('.modal-title').text('Crear nuevo electrodomestico');
             $('#mode').val('1');
             $('#deviceModal').modal();
         });
@@ -149,7 +149,7 @@
 
         $('.btn-delete').click(function (e) {
             e.preventDefault();
-            var option = confirm("Seguro que quieres eliminar este dispositivo");
+            var option = confirm("Seguro que quieres eliminar este electrodomestico");
             if (option) {
                 $.ajax({
                     'url': '/delete_device/' + $(this).attr('uid'),
@@ -171,7 +171,7 @@
             e.preventDefault();
             $('#mode').val(2);
             $('#deviceid').val($(this).attr('uid'));
-            $('.modal-title').text('Editar dispositivo');
+            $('.modal-title').text('Editar electrodomestico');
             $('#deviceModal').modal();
 
             $.ajax({
