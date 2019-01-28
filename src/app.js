@@ -94,7 +94,7 @@ app.post('/login', function (req, res, next) {
                             res.redirect('/trepairs');
                         }
                     } else {
-                        res.render('login', { error: 'Error Login, Please try again' });
+                        res.render('login', { error: 'Error Login, Por favor intente de nuevo' });
                     }
 
                 });
@@ -197,8 +197,10 @@ app.get('/edit_user/:id', function (req, res, next) {
 });
 
 app.post('/edit_user/:id', function (req, res, next) {
+    var usr = req.body;
+    usr.password = sha256(usr.password);
     req.getConnection((err, conn) => {
-        conn.query('UPDATE users set ? where id = ?', [req.body, req.params.id], (err, user) => {
+        conn.query('UPDATE users set ? where id = ?', [usr, req.params.id], (err, user) => {
             if (err)
                 res.json(err);
     
@@ -207,6 +209,82 @@ app.post('/edit_user/:id', function (req, res, next) {
     });
 });
 // end users
+
+// DEVICES
+app.get('/devices', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT id, name, image FROM devices', (err, devices) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).render('devices', { data: devices });
+
+        });
+    });
+});
+
+app.post('/add_device', function (req, res, next) {
+    req.getConnection((err, conn) => {
+
+        conn.query('SELECT * FROM devices WHERE name = ?', [req.body.name], (err, devices) => {
+            if (err)
+                res.json(err);
+
+            if (devices.length > 0) {
+                // There is already a device with this name in the database
+                res.status(200).json({
+                    deviceexist: true,
+                    message: 'Ya existe un dispositivo con este nombre'
+                });
+            } else {
+                conn.query('INSERT INTO devices set ?', [req.body], (err, devices) => {
+                    if (err)
+                        res.json(err);
+
+                    res.status(200).json({
+                        deviceexist: false,
+                        message: 'Se ha creado el nuevo dispositivo'
+                    });
+                });
+            }
+        });
+
+    });
+});
+
+app.post('/delete_device/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('DELETE FROM devices WHERE id = ?', [req.params.id], (err, users) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).json({ message: 'Dispositivo eliminado' });
+        });
+    });
+});
+
+app.get('/edit_device/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT id, name, image FROM devices WHERE id = ?', [req.params.id], (err, user) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).json({ data: user });
+        });
+    });
+});
+
+app.post('/edit_device/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('UPDATE devices set ? where id = ?', [req.body, req.params.id], (err, user) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).json({ data: 'Dispositivo Actualizado' });
+        });
+    });
+});
+// end Devices
 
 // Static Files
 app.use('/public', express.static(__dirname + '/public'));
