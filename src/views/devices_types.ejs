@@ -1,0 +1,247 @@
+<% include partials/_header %>
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+
+<div class="container">
+    <div class="top-acc">
+        <h3 class="pull-left">Tipos de electrodomesticos</h3>
+        <button id="add_device_type" class="add_device_type btn btn-primary pull-right">
+            <i class="fa fa-plus-circle"></i> Agregar tipo
+        </button>
+        <div class="clearfix"></div>
+    </div>
+    <div class="table-responsive">
+        <table id="tbl-device_types" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Id</th>
+                    <th>Electrodomestico</th>
+                    <th>Tipo</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(var i = 0; i < data.length; i++) { %>
+                <tr>
+                    <td align="center">
+                        <img src="<%= data[i].image %>" alt="image" style="width: 35px;">
+                    </td>
+                    <td align="center">
+                        <%= data[i].id %>
+                    </td>
+                    <td>
+                        <%= data[i].device %>
+                    </td>
+                    <td>
+                        <%= data[i].name %>
+                    </td>
+                    <td align="center">
+                        <a href="/edit_device_type/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
+                                class="fa fa-pencil" aria-hidden="true"></i></a>
+                        <a href="/delete_device_type/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-danger btn-delete"><i
+                                class="fa fa-trash" aria-hidden="true"></i></a>
+                    </td>
+                </tr>
+
+                <% } %>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<input type="hidden" id="mode">
+<input type="hidden" id="device_typeid">
+<!-- Modal -->
+<div class="modal fade" id="device_typeModal" tabindex="-1" role="dialog" aria-labelledby="device_typeModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Electrodomesticos</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="txtName">Nombre</label>
+                        <input type="text" class="form-control" id="txtName" placeholder="Nombre">
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="txtImage">Electrodomestico</label>
+                        <select id="devices">
+                            <option value="0" style="display: none">Seleccione un electrodomestico</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <img id="loading" src="/public/images/loading.gif" alt="cargando" style="display: none; width: 100px; height: 36px;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary btn-save">Guardar electrodomestico</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% include partials/_footer %>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#tbl-device_types').DataTable({
+            "order": [[1, "desc"]],
+            "columnDefs": [
+                { "width": "10%", "targets": 0 },
+                { "width": "5%", "targets": 1 },
+                { "width": "35%", "targets": 2 },
+                { "width": "15%", "targets": 4 }
+            ]
+        });
+
+        $('#add_device_type').click(function () {
+            $('.modal-title').text('Crear nuevo tipo de electrodomestico');
+            $('#mode').val('1');
+            var deviceList = $('#devices');
+
+            $.ajax({
+                'url': '/device_list',
+                'method': 'GET',
+                'dataType': 'json',
+                success: function (response) {
+                    const devArray = response.data;
+                    let html = '';
+                   for (let i = 0; i < devArray.length; i++) {
+                       const device = devArray[i];
+                       html += '<option value="'+device.id+'">'+device.name+'</option>';
+                   }
+                   deviceList.append(html);
+                   $('#device_typeModal').modal();
+                },
+                error: function (err) {
+                    alert('Ocurrió un error por favor intente de nuevo');
+                    console.log(err);
+                }
+            });
+        });
+
+        $('.btn-save').click(function () {
+            var loader = $('#loading');
+            var txtName = $('#txtName').val().trim();
+            var device_id = $('#devices').val();
+
+            var data = {
+                name: txtName,
+                device_id: device_id
+            }
+            var mode = $('#mode').val();
+            if (txtName == '' && device_id == 0) {
+                alert('Debes completar todos los campos');
+                return;
+            }
+            var url = '';
+            if (mode == 1) { // Add
+                url = '/add_device_type';
+            } else if (mode == 2) { // Edit
+                url = '/edit_device_type/' + $('#device_typeid').val();
+            }
+
+            $.ajax({
+                'url': url,
+                'method': 'POST',
+                'data': data,
+                'dataType': 'json',
+                success: function (response) {
+                    loader.css('display', 'none');
+
+                    if (response.deviceexist) {
+                        alert(response.message);
+                    } else {
+                        $('#device_typeModal').modal('hide');
+                        location.reload();
+                    }
+                    console.log(response);
+                },
+                beforeSend: function () {
+                    loader.css('display', 'block');
+                },
+                error: function (err) {
+                    loader.css('display', 'none');
+                    console.log(err);
+                }
+            });
+
+        });
+
+        $('.btn-delete').click(function (e) {
+            e.preventDefault();
+            var option = confirm("Seguro que quieres eliminar este tipo de electrodomestico");
+            if (option) {
+                $.ajax({
+                    'url': '/delete_device_type/' + $(this).attr('uid'),
+                    'method': 'POST',
+                    'dataType': 'json',
+                    success: function (response) {
+                        alert(response.message);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert('Ocurrió un error por favor intente de nuevo');
+                        console.log(err);
+                    }
+                });
+            }
+        });
+
+        $('.btn-edit').click(function (e) {
+            e.preventDefault();
+            $('#mode').val(2);
+            $('#device_typeid').val($(this).attr('uid'));
+            $('.modal-title').text('Editar tipo de electrodomestico');
+            $('#device_typeModal').modal();
+
+            var deviceList = $('#devices');
+
+            $.ajax({ // poblate cbo 
+                'url': '/device_list',
+                'method': 'GET',
+                'dataType': 'json',
+                success: function (response) {
+                    const devArray = response.data;
+                    let html = '';
+                   for (let i = 0; i < devArray.length; i++) {
+                       const device = devArray[i];
+                       html += '<option value="'+device.id+'">'+device.name+'</option>';
+                   }
+                   deviceList.append(html);
+                   $('#device_typeModal').modal();
+                },
+                error: function (err) {
+                    alert('Ocurrió un error por favor intente de nuevo');
+                    console.log(err);
+                }
+            });
+
+            $.ajax({
+                'url': '/edit_device_type/' + $(this).attr('uid'),
+                'method': 'GET',
+                'dataType': 'json',
+                success: function (response) {
+                    var txtName = $('#txtName').val(response.data[0].name);
+                    var cboDevice = $('#devices').val(response.data[0].device_id);
+                    console.log(response)
+                },
+                error: function (err) {
+                    alert('Ocurrió un error por favor intente de nuevo');
+                    console.log(err);
+                }
+            });
+
+        });
+    });
+
+    $('#device_typeModal').on('hidden.bs.modal', function () {
+        var txtName = $('#txtName').val('');
+        var cboDevices = $('#devices').text('');
+    });
+</script>

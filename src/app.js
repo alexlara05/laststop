@@ -218,7 +218,6 @@ app.get('/devices', function (req, res, next) {
                 res.json(err);
 
             res.status(200).render('devices', { data: devices });
-
         });
     });
 });
@@ -285,6 +284,96 @@ app.post('/edit_device/:id', function (req, res, next) {
     });
 });
 // end Devices
+
+// DEVICES TYPES
+app.get('/devices_types', function (req, res, next) {
+    let  sql = 'SELECT devices_types.id, devices.name device, devices.image, devices_types.name FROM devices_types ';
+    sql += 'INNER JOIN devices ON devices_types.device_id = devices.id;'
+    req.getConnection((err, conn) => {
+        conn.query(sql, (err, devices_types) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).render('devices_types', { data: devices_types });
+
+        });
+    });
+});
+
+app.get('/device_list', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT id, name, image FROM devices', (err, devices) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).json({ data: devices });
+        });
+    });
+});
+
+app.post('/add_device_type', function (req, res, next) {
+    req.getConnection((err, conn) => {
+
+        conn.query('SELECT * FROM devices_types WHERE name = ? AND device_id = ?', [req.body.name, req.body.device_id], (err, devices) => {
+            if (err)
+                res.json(err);
+
+            if (devices.length > 0) {
+                // There is already a device with this name in the database.
+                res.status(200).json({
+                    deviceexist: true,
+                    message: 'Ya existe un electrodomestico con este nombre'
+                });
+            } else {
+                conn.query('INSERT INTO devices_types set ?', [req.body], (err, devices) => {
+                    if (err)
+                        res.json(err);
+
+                    res.status(200).json({
+                        deviceexist: false,
+                        message: 'Se ha creado un nuevo tipo de electrodomestico'
+                    });
+                });
+            }
+        });
+
+    });
+});
+
+app.post('/delete_device_type/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('DELETE FROM devices_types WHERE id = ?', [req.params.id], (err, users) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).json({ message: 'Dispositivo eliminado' });
+        });
+    });
+});
+
+app.get('/edit_device_type/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT id, name, device_id FROM devices_types WHERE id = ?', [req.params.id], (err, user) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).json({ data: user });
+        });
+    });
+});
+
+app.post('/edit_device_type/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('UPDATE devices_types set ? where id = ?', [req.body, req.params.id], (err, user) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).json({ data: 'Dispositivo Actualizado' });
+        });
+    });
+});
+// End Devices Types
+
 
 // Static Files
 app.use('/public', express.static(__dirname + '/public'));
