@@ -373,7 +373,81 @@ app.post('/edit_device_type/:id', function (req, res, next) {
     });
 });
 // End Devices Types
+// MANUFACTURER
+app.get('/manufacturers', function (req, res, next) {
+    let  sql = 'SELECT manufacturers.id, devices.name device, devices.image, manufacturers.name, manufacturers.logo FROM manufacturers';
+    sql += ' INNER JOIN devices ON manufacturers.device_id = devices.id;';
+    req.getConnection((err, conn) => {
+        conn.query(sql, (err, manufacturers) => {
+            if (err)
+                res.json(err);
 
+            res.status(200).render('manufacturers', { data: manufacturers });
+        });
+    });
+});
+
+app.post('/add_manufacturer', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT * FROM manufacturers WHERE name = ? AND device_id = ?', [req.body.name, req.body.device_id], (err, devices) => {
+            if (err)
+                res.json(err);
+
+            if (devices.length > 0) {
+                // There is already a device with this name in the database.
+                res.status(200).json({
+                    deviceexist: true,
+                    message: 'Ya existe una marca con este nombre para este electrodomestico'
+                });
+            } else {
+                conn.query('INSERT INTO manufacturers set ?', [req.body], (err, devices) => {
+                    if (err)
+                        res.json(err);
+
+                    res.status(200).json({
+                        deviceexist: false,
+                        message: 'Se ha creado una nueva marca para este electrodomestico'
+                    });
+                });
+            }
+        });
+
+    });
+});
+
+app.post('/delete_manufacturer/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('DELETE FROM manufacturers WHERE id = ?', [req.params.id], (err, users) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).json({ message: 'Marca eliminada' });
+        });
+    });
+});
+
+app.get('/edit_manufacturer/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT id, name, logo, device_id FROM manufacturers WHERE id = ?', [req.params.id], (err, manufacturer) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).json({ data: manufacturer });
+        });
+    });
+});
+
+app.post('/edit_manufacturer/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('UPDATE manufacturers set ? where id = ?', [req.body, req.params.id], (err, user) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).json({ data: 'Marca Actualizada' });
+        });
+    });
+});
+// End MANUFACTURERS
 
 // Static Files
 app.use('/public', express.static(__dirname + '/public'));
@@ -383,7 +457,7 @@ app.listen(3000, () => {
 
 // Some functions
 function arrayContain(arr, element) {
-    // Check if array contain a element
+    // Check if array contain a element 
     for (var i = 0; i < arr.length; i++) {
         if (arr[i] === element) {
             return true;
@@ -393,9 +467,8 @@ function arrayContain(arr, element) {
 }
 
 function getDateTime() {
-
     var date = new Date();
-
+    
     var hour = date.getHours();
     hour = (hour < 10 ? "0" : "") + hour;
 
