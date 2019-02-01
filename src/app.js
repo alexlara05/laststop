@@ -562,7 +562,6 @@ app.post('/add_client', function (req, res, next) {
                 });
             }
         });
-
     });
 });
 
