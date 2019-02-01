@@ -38,7 +38,7 @@
                         <%= data[i].phone %>
                     </td>
                     <td>
-                        <%= data[i].createdate.toLocaleString() %>
+                        <%= data[i].created_at.toLocaleString() %>
                     </td>
                     <td align="center">
                         <% if(data[i].isadmin == 1){ %>
@@ -78,7 +78,7 @@
 <input type="hidden" id="mode">
 <input type="hidden" id="userid">
 <!-- Modal -->
-<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModal" aria-hidden="true">
+<div class="modal fade" id="userModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="userModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">

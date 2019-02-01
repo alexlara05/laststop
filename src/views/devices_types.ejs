@@ -33,7 +33,7 @@
                         <%= data[i].device %>
                     </td>
                     <td>
-                        <%= data[i].name %>
+                        <strong><%= data[i].name %></strong>
                     </td>
                     <td align="center">
                         <a href="/edit_device_type/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
@@ -135,8 +135,13 @@
                 device_id: device_id
             }
             var mode = $('#mode').val();
-            if (txtName == '' && device_id == 0) {
-                alert('Debes completar todos los campos');
+            if (txtName == ''){
+                alert('Debes escribir el nombre');
+                return;
+            }
+
+            if(device_id == 0){
+                alert('Debes seleccionar un electrodomestico');
                 return;
             }
             var url = '';

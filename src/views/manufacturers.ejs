@@ -57,7 +57,7 @@
 <input type="hidden" id="mode">
 <input type="hidden" id="manufacturerid">
 <!-- Modal -->
-<div class="modal fade" id="manufacturerModal" tabindex="-1" role="dialog" aria-labelledby="manufacturerModal" aria-hidden="true">
+<div class="modal fade" id="manufacturerModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="manufacturerModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -79,7 +79,7 @@
                         </select>
                     </div>
                     <div class="form-group col-md-12">
-                        <label for="txtLogo">Nombre</label>
+                        <label for="txtLogo">Logo</label>
                         <input type="text" class="form-control" id="txtLogo" placeholder="Url imagen">
                     </div>
                 </div>
@@ -145,8 +145,13 @@
                 logo: txtLogo
             }
             var mode = $('#mode').val();
-            if (txtName == '' && device_id == 0) {
-                alert('Debes completar todos los campos');
+            if (txtName == ''){
+                alert('Debes escribir el nombre');
+                return;
+            }
+
+            if(device_id == 0){
+                alert('Debes seleccionar un electrodomestico');
                 return;
             }
             var url = '';

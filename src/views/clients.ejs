@@ -1,0 +1,375 @@
+<% include partials/_header %>
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+
+<div class="container">
+    <div class="top-acc">
+        <h3 class="pull-left">Clientes</h3>
+        <button id="add_client" class="add_client btn btn-primary pull-right">
+            <i class="fa fa-plus-circle"></i> Agregar cliente
+        </button>
+        <div class="clearfix"></div>
+    </div>
+    <div class="table-responsive">
+        <table id="tbl-clients" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Dirección</th>
+                    <th>Teléfono</th>
+                    <th>Compañia</th>
+                    <th>Fecha creación</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(var i = 0; i < data.length; i++) { %>
+                <tr>
+                    <td align="center">
+                        <%= data[i].id %>
+                    </td>
+                    <td>
+                        <%= data[i].name %>
+                    </td>
+                    <td>
+                        <%= data[i].lastname %>
+                    </td>
+                    <td>
+                        <a target="_blank" href="http://maps.google.com/?q=<%= data[i].address %>+<%= data[i].city %>+<%= data[i].statecode %>"><%= data[i].address %>, <%= data[i].city %>, <%= data[i].statecode %></a>
+                    </td>
+                    <td>
+                        <%= data[i].phone %>
+                    </td>
+                    <td>
+                        <%= data[i].company %>
+                    </td>
+                    <td>
+                        <%= data[i].created_at.toLocaleString() %>
+                    </td>
+                    <td align="center">
+                        <a href="/edit_client/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
+                                class="fa fa-pencil" aria-hidden="true"></i></a>
+                        <a href="/delete_client/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-danger btn-delete"><i
+                                class="fa fa-trash" aria-hidden="true"></i></a>
+                    </td>
+                </tr>
+
+                <% } %>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<input type="hidden" id="mode">
+<input type="hidden" id="clientid">
+<!-- Modal -->
+<div class="modal fade" id="clientModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="clientModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Clientes</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="form-row mb-3">
+                        <label for="txtName">Información del cliente</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id=""> <i class="fa fa-user"></i></span>
+                            </div>
+                            <input type="text" class="form-control" id="txtName" placeholder="Nombre">
+                            <input type="text" class="form-control" id="txtLastName" placeholder="Apellido">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtName">Compañía</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-building"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtCompany" placeholder="Compañía">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtPhone">Teléfono</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtPhone" placeholder="Teléfono">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtAddress">Dirección</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-street-view"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtAddress" placeholder="Ej: 000 nombre street">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtCity">Ciudad</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-map-signs"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtCity" placeholder="Nombre de la ciudad">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtState">Estado</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-map"></i></span>
+                                    </div>
+                                    <select id="states" style="width: calc(100% - 41px);height: 36px;">
+                                        <option style="display: none" value="0">Seleccione el estado</option>
+                                    <select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtApt">Apt/Unit</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-home"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtApt" placeholder="Edificio numero">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-field col-lg-12">
+                    <div class="form-group">
+                        <label for="txtComments">Comentarios</label> <i class="fa fa-commenting"></i>
+                        <textarea class="form-control" id="txtComments" placeholder="Notas y/o comentarios" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <img id="loading" src="/public/images/loading.gif" alt="cargando" style="display: none; width: 100px; height: 36px;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary btn-save">Guardar cliente</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% include partials/_footer %>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#tbl-clients').DataTable({
+            "order": [[0, "desc"]],
+            "columnDefs": [
+                { "width": "5%", "targets": 0 },
+                { "width": "10%", "targets": 7 }
+            ]
+        });
+
+        $('#add_client').click(function () {
+            $('.modal-title').text('Crear nuevo cliente');
+            $('#mode').val('1');
+            var stateList = $('#states');
+
+            $.ajax({
+                'url': '/states',
+                'method': 'GET',
+                'dataType': 'json',
+                success: function (response) {
+                    const devArray = response.data;
+                    let html = '';
+                    for (let i = 0; i < devArray.length; i++) {
+                        const state = devArray[i];
+                        html += '<option value="' + state.STATEID + '">' + state.FULLNAME + '</option>';
+                    }
+                    stateList.append(html);
+                    $('#clientModal').modal();
+                    console.log(response)
+                },
+                error: function (err) {
+                    alert('Ocurrió un error por favor intente de nuevo');
+                    console.log(err);
+                }
+            });
+        });
+
+        $('.btn-save').click(function () {
+            var loader = $('#loading');
+            var txtName = $('#txtName').val().trim();
+            var txtLastName = $('#txtLastName').val().trim();
+            var txtCompany = $('#txtCompany').val().trim();
+            var txtPhone = $('#txtPhone').val().trim();
+            var txtAddress = $('#txtAddress').val().trim();
+            var txtCity = $('#txtCity').val().trim();
+            var txtApt = $('#txtApt').val().trim();
+            var txtComments = $('#txtComments').val().trim();
+            var cboState = $('#states').val();
+            var data = {
+                name: txtName,
+                lastname: txtLastName,
+                company: txtCompany,
+                address: txtAddress,
+                phone: txtPhone,
+                city: txtCity,
+                comments: txtComments,
+                apt_unit: txtApt,
+                state_id: cboState
+            }
+            var mode = $('#mode').val();
+            if (txtName == '') {
+                alert('Debes escribir el nombre');
+                return;
+            }
+            if (txtAddress == '') {
+                alert('Debes escribir La dirección');
+                return;
+            }
+            if (txtCity == '') {
+                alert('Debes escribir la ciudad para la dirección');
+                return;
+            }
+            if (txtPhone == '') {
+                alert('Debes escribir un numero de telefono');
+                return;
+            }
+            if (cboState == 0) {
+                alert('Debes seleccionar un estado para la dirección');
+                return;
+            }
+
+            var url = '';
+            if (mode == 1) { // Add
+                url = '/add_client';
+            } else if (mode == 2) { // Edit
+                url = '/edit_client/' + $('#clientid').val();
+            }
+
+            $.ajax({
+                'url': url,
+                'method': 'POST',
+                'data': data,
+                'dataType': 'json',
+                success: function (response) {
+                    loader.css('display', 'none');
+
+                    if (response.stateexist) {
+                        alert(response.message);
+                        return;
+                    } else {
+                        $('#clientModal').modal('hide');
+                        location.reload();
+                    }
+                },
+                beforeSend: function () {
+                    loader.css('display', 'block');
+                },
+                error: function (err) {
+                    loader.css('display', 'none');
+                    console.log(err);
+                }
+            });
+
+        });
+
+        $('.btn-delete').click(function (e) {
+            e.preventDefault();
+            var option = confirm("Seguro que quieres eliminar este cliente y todo su historial de registros?");
+            if (option) {
+                $.ajax({
+                    'url': '/delete_client/' + $(this).attr('uid'),
+                    'method': 'POST',
+                    'dataType': 'json',
+                    success: function (response) {
+                        alert(response.message);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert('Ocurrió un error por favor intente de nuevo');
+                        console.log(err);
+                    }
+                });
+            }
+        });
+
+        $('.btn-edit').click(function (e) {
+            e.preventDefault();
+            $('#mode').val(2);
+            $('#clientid').val($(this).attr('uid'));
+            $('.modal-title').text('Editar cliente');
+            $('#clientModal').modal();
+
+            var stateList = $('#states');
+
+            $.ajax({ // poblate cbo 
+                'url': '/states',
+                'method': 'GET',
+                'dataType': 'json',
+                success: function (response) {
+                    const devArray = response.data;
+                    let html = '';
+                    for (let i = 0; i < devArray.length; i++) {
+                        const state = devArray[i];
+                        html += '<option value="' + state.STATEID + '">' + state.FULLNAME + '</option>';
+                    }
+                    stateList.append(html);
+                    $('#clientModal').modal();
+                },
+                error: function (err) {
+                    alert('Ocurrió un error por favor intente de nuevo');
+                    console.log(err);
+                }
+            });
+
+            $.ajax({
+                'url': '/edit_client/' + $(this).attr('uid'),
+                'method': 'GET',
+                'dataType': 'json',
+                success: function (response) {
+                    $('#txtName').val(response.data[0].name);
+                    $('#txtLastName').val(response.data[0].lastname);
+                    $('#txtPhone').val(response.data[0].phone);
+                    $('#txtCompany').val(response.data[0].company);
+                    $('#txtAddress').val(response.data[0].address);
+                    $('#txtCity').val(response.data[0].city);
+                    $('#txtApt').val(response.data[0].apt_unit);
+                    $('#txtComments').val(response.data[0].comments);
+                    $('#states').val(response.data[0].state_id);
+                },
+                error: function (err) {
+                    alert('Ocurrió un error por favor intente de nuevo');
+                    console.log(err);
+                }
+            });
+
+        });
+    });
+
+    $('#clientModal').on('hidden.bs.modal', function () {
+        var txtName = $('#txtName').val('');
+        var txtLogo = $('#txtLogo').val('');
+        var cbostates = $('#states').text('');
+    });
+</script>

@@ -130,7 +130,7 @@ app.get('/logout', function (req, res, next) {
 // USERS
 app.get('/users', function (req, res, next) {
     req.getConnection((err, conn) => {
-        conn.query('SELECT id, name, email, phone, createdate, isadmin FROM users', (err, users) => {
+        conn.query('SELECT id, name, email, phone, created_at, isadmin FROM users', (err, users) => {
             if (err)
                 res.json(err);
 
@@ -143,7 +143,7 @@ app.get('/users', function (req, res, next) {
 app.post('/add_user', function (req, res, next) {
     req.getConnection((err, conn) => {
         var data = req.body;
-        data.createdate = getDateTime();
+        data.created_at = getDateTime();
         data.password = sha256(req.body.password);
 
         conn.query('SELECT * FROM users WHERE email = ?', [req.body.email], (err, users) => {
@@ -448,6 +448,168 @@ app.post('/edit_manufacturer/:id', function (req, res, next) {
     });
 });
 // End MANUFACTURERS
+// BREAKDOWNS
+app.get('/breakdowns', function (req, res, next) {
+    let  sql = 'SELECT breakdowns.id, devices.name device, devices.image, breakdowns.name FROM breakdowns ';
+    sql += 'INNER JOIN devices ON breakdowns.device_id = devices.id;';
+    req.getConnection((err, conn) => {
+        conn.query(sql, (err, breakdowns) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).render('breakdowns', { data: breakdowns });
+        });
+    });
+});
+
+app.post('/add_breakdown', function (req, res, next) {
+    req.getConnection((err, conn) => {
+
+        conn.query('SELECT * FROM breakdowns WHERE name = ? AND device_id = ?', [req.body.name, req.body.device_id], (err, devices) => {
+            if (err)
+                res.json(err);
+
+            if (devices.length > 0) {
+                // There is already a device with this name in the database.
+                res.status(200).json({
+                    deviceexist: true,
+                    message: 'Ya existe una falla para este electrodomestico con este nombre'
+                });
+            } else {
+                conn.query('INSERT INTO breakdowns set ?', [req.body], (err, devices) => {
+                    if (err)
+                        res.json(err);
+
+                    res.status(200).json({
+                        deviceexist: false,
+                        message: 'Se ha creado una nueva falla de electrodomestico'
+                    });
+                });
+            }
+        });
+
+    });
+});
+
+app.post('/delete_breakdown/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('DELETE FROM breakdown WHERE id = ?', [req.params.id], (err, users) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).json({ message: 'Dispositivo eliminado' });
+        });
+    });
+});
+
+app.get('/edit_breakdown/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT id, name, device_id FROM breakdowns WHERE id = ?', [req.params.id], (err, user) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).json({ data: user });
+        });
+    });
+});
+
+app.post('/edit_breakdown/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('UPDATE breakdowns set ? where id = ?', [req.body, req.params.id], (err, user) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).json({ data: 'Falla Actualizada' });
+        });
+    });
+});
+// End BREAKDOWNS
+// CLIENTS
+app.get('/clients', function (req, res, next) {
+    let  sql = 'SELECT states.STATEID statecode, states.FULLNAME statename, clients.id, clients.name, clients.lastname, clients.phone, clients.company, clients.address, clients.city, clients.zipcode, clients.email, clients.apt_unit, clients.created_at, clients.comments FROM clients ' 
+    sql += 'INNER JOIN states ON states.STATEID = clients.state_id;';
+    req.getConnection((err, conn) => {
+        conn.query(sql, (err, clients) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).render('clients', { data: clients });
+        });
+    });
+});
+
+app.post('/add_client', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT * FROM clients WHERE name = ? AND lastname = ?', [req.body.name, req.body.lastname], (err, clients) => {
+            if (err)
+                res.json(err);
+
+            if (clients.length > 0) {
+                // This client exist in database
+                res.status(200).json({
+                    stateexist: true,
+                    message: 'Ya existe un cliente con este nombre'
+                });
+            } else {
+                conn.query('INSERT INTO clients set ?', [req.body], (err, clients) => {
+                    if (err)
+                        res.json(err);
+
+                    res.status(200).json({
+                        stateexist: false,
+                        message: 'Se ha creado un nuevo cliente'
+                    });
+                });
+            }
+        });
+
+    });
+});
+
+app.post('/delete_client/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('DELETE FROM clients WHERE id = ?', [req.params.id], (err, users) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).json({ message: 'Cliente eliminado' });
+        });
+    });
+});
+
+app.get('/states', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT * from states', (err, states) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).json({ data: states });
+        });
+    });
+});
+
+app.get('/edit_client/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT id, name, lastname, phone, company, city, address, apt_unit, state_id, comments FROM clients WHERE id = ?', [req.params.id], (err, client) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).json({ data: client });
+        });
+    });
+});
+
+app.post('/edit_client/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('UPDATE clients set ? where id = ?', [req.body, req.params.id], (err, user) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).json({ data: 'Cliente Actualizado' });
+        });
+    });
+});
+// End CLIENTS
 
 // Static Files
 app.use('/public', express.static(__dirname + '/public'));
@@ -468,7 +630,7 @@ function arrayContain(arr, element) {
 
 function getDateTime() {
     var date = new Date();
-    
+
     var hour = date.getHours();
     hour = (hour < 10 ? "0" : "") + hour;
 

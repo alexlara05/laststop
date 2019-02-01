@@ -3,19 +3,20 @@
 
 <div class="container">
     <div class="top-acc">
-        <h3 class="pull-left">Electrodomesticos</h3>
-        <button id="add_device" class="add_device btn btn-primary pull-right">
-            <i class="fa fa-plus-circle"></i> Agregar electrodomestico
+        <h3 class="pull-left">Fallas comunes de electrodomesticos</h3>
+        <button id="add_breakdown" class="add_breakdown btn btn-primary pull-right">
+            <i class="fa fa-plus-circle"></i> Agregar tipo
         </button>
         <div class="clearfix"></div>
     </div>
     <div class="table-responsive">
-        <table id="tbl-devices" class="table table-striped table-bordered" style="width:100%">
+        <table id="tbl-breakdowns" class="table table-striped table-bordered" style="width:100%">
             <thead>
                 <tr>
                     <th></th>
                     <th>Id</th>
-                    <th>Nombre</th>
+                    <th>Electrodomestico</th>
+                    <th>Falla</th>
                     <th></th>
                 </tr>
             </thead>
@@ -29,13 +30,15 @@
                         <%= data[i].id %>
                     </td>
                     <td>
-                        <%= data[i].name %>
+                        <%= data[i].device %>
                     </td>
-
+                    <td>
+                        <strong><%= data[i].name %></strong>
+                    </td>
                     <td align="center">
-                        <a href="/edit_device/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
+                        <a href="/edit_breakdown/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
                                 class="fa fa-pencil" aria-hidden="true"></i></a>
-                        <a href="/delete_device/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-danger btn-delete"><i
+                        <a href="/delete_breakdown/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-danger btn-delete"><i
                                 class="fa fa-trash" aria-hidden="true"></i></a>
                     </td>
                 </tr>
@@ -48,13 +51,13 @@
 
 </div>
 <input type="hidden" id="mode">
-<input type="hidden" id="deviceid">
+<input type="hidden" id="breakdownid">
 <!-- Modal -->
-<div class="modal fade" id="deviceModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="deviceModal" aria-hidden="true">
+<div class="modal fade" id="breakdownModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="breakdownModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Electrodomesticos</h5>
+                <h5 class="modal-title">Fallas de electrodomesticos</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -62,12 +65,14 @@
             <div class="modal-body">
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <label for="txtName">Nombre</label>
+                        <label for="txtName">Nombre de la falla</label>
                         <input type="text" class="form-control" id="txtName" placeholder="Nombre">
                     </div>
                     <div class="form-group col-md-12">
-                        <label for="txtImage">Url imagen</label>
-                        <input type="url" class="form-control" id="txtImage" placeholder="Imagen, icono">
+                        <label for="txtImage">Electrodomestico</label>
+                        <select id="devices">
+                            <option value="0" style="display: none">Seleccione un electrodomestico</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -84,40 +89,67 @@
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function () {
-        $('#tbl-devices').DataTable({
+        $('#tbl-breakdowns').DataTable({
             "order": [[1, "desc"]],
             "columnDefs": [
                 { "width": "10%", "targets": 0 },
                 { "width": "5%", "targets": 1 },
-                { "width": "15%", "targets": 3 }
+                { "width": "35%", "targets": 2 },
+                { "width": "15%", "targets": 4 }
             ]
         });
 
-        $('#add_device').click(function () {
-            $('.modal-title').text('Crear nuevo electrodomestico');
+        $('#add_breakdown').click(function () {
+            $('.modal-title').text('Crear nuevo tipo de electrodomestico');
             $('#mode').val('1');
-            $('#deviceModal').modal();
+            var deviceList = $('#devices');
+
+            $.ajax({
+                'url': '/device_list',
+                'method': 'GET',
+                'dataType': 'json',
+                success: function (response) {
+                    const devArray = response.data;
+                    let html = '';
+                   for (let i = 0; i < devArray.length; i++) {
+                       const device = devArray[i];
+                       html += '<option value="'+device.id+'">'+device.name+'</option>';
+                   }
+                   deviceList.append(html);
+                   $('#breakdownModal').modal();
+                },
+                error: function (err) {
+                    alert('Ocurrió un error por favor intente de nuevo');
+                    console.log(err);
+                }
+            });
         });
 
         $('.btn-save').click(function () {
             var loader = $('#loading');
             var txtName = $('#txtName').val().trim();
-            var txtImage = $('#txtImage').val().trim();
+            var device_id = $('#devices').val();
 
             var data = {
                 name: txtName,
-                image: txtImage
+                device_id: device_id
             }
             var mode = $('#mode').val();
-            if (txtName == '' && txtImage == '') {
-                alert('Debes completar todos los campos');
+            if (txtName == ''){
+                alert('Debes escribir el nombre');
                 return;
             }
+
+            if(device_id == 0){
+                alert('Debes seleccionar un electrodomestico');
+                return;
+            }
+                
             var url = '';
             if (mode == 1) { // Add
-                url = '/add_device';
+                url = '/add_breakdown';
             } else if (mode == 2) { // Edit
-                url = '/edit_device/' + $('#deviceid').val();
+                url = '/edit_breakdown/' + $('#breakdownid').val();
             }
 
             $.ajax({
@@ -131,7 +163,7 @@
                     if (response.deviceexist) {
                         alert(response.message);
                     } else {
-                        $('#deviceModal').modal('hide');
+                        $('#breakdownModal').modal('hide');
                         location.reload();
                     }
                     console.log(response);
@@ -149,10 +181,10 @@
 
         $('.btn-delete').click(function (e) {
             e.preventDefault();
-            var option = confirm("Seguro que quieres eliminar este electrodomestico");
+            var option = confirm("Seguro que quieres eliminar esta falla de electrodomestico");
             if (option) {
                 $.ajax({
-                    'url': '/delete_device/' + $(this).attr('uid'),
+                    'url': '/delete_breakdown/' + $(this).attr('uid'),
                     'method': 'POST',
                     'dataType': 'json',
                     success: function (response) {
@@ -170,17 +202,39 @@
         $('.btn-edit').click(function (e) {
             e.preventDefault();
             $('#mode').val(2);
-            $('#deviceid').val($(this).attr('uid'));
-            $('.modal-title').text('Editar electrodomestico');
-            $('#deviceModal').modal();
+            $('#breakdownid').val($(this).attr('uid'));
+            $('.modal-title').text('Editar falla de electrodomestico');
+            $('#breakdownModal').modal();
+
+            var deviceList = $('#devices');
+
+            $.ajax({ // poblate cbo 
+                'url': '/device_list',
+                'method': 'GET',
+                'dataType': 'json',
+                success: function (response) {
+                    const devArray = response.data;
+                    let html = '';
+                   for (let i = 0; i < devArray.length; i++) {
+                       const device = devArray[i];
+                       html += '<option value="'+device.id+'">'+device.name+'</option>';
+                   }
+                   deviceList.append(html);
+                   $('#breakdownModal').modal();
+                },
+                error: function (err) {
+                    alert('Ocurrió un error por favor intente de nuevo');
+                    console.log(err);
+                }
+            });
 
             $.ajax({
-                'url': '/edit_device/' + $(this).attr('uid'),
+                'url': '/edit_breakdown/' + $(this).attr('uid'),
                 'method': 'GET',
                 'dataType': 'json',
                 success: function (response) {
                     var txtName = $('#txtName').val(response.data[0].name);
-                    var txtImage = $('#txtImage').val(response.data[0].image);
+                    var cboDevice = $('#devices').val(response.data[0].device_id);
                     console.log(response)
                 },
                 error: function (err) {
@@ -192,8 +246,8 @@
         });
     });
 
-    $('#deviceModal').on('hidden.bs.modal', function () {
+    $('#breakdownModal').on('hidden.bs.modal', function () {
         var txtName = $('#txtName').val('');
-        var txttxtImage = $('#txtImage').val('');
+        var cboDevices = $('#devices').text('');
     });
 </script>
