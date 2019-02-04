@@ -25,7 +25,8 @@ app.use(mySqlConnection(mysql, {
     user: 'root',
     password: '123456',
     port: 3306,
-    database: 'laststop'
+    database: 'laststop',
+    multipleStatements: true
 }, 'single'));
 
 // Middlewares - watch User session
@@ -72,7 +73,6 @@ app.post('/login', function (req, res, next) {
         var email = req.body.email;
         var encryptedPass = sha256(req.body.password);
         req.getConnection((err, conn) => {
-
             conn.query('SELECT id, name, email, password, isadmin FROM users WHERE email = ? AND password = ?',
                 [email, encryptedPass], (err, users) => {
                     if (err)
@@ -96,10 +96,8 @@ app.post('/login', function (req, res, next) {
                     } else {
                         res.render('login', { error: 'Error Login, Por favor intente de nuevo' });
                     }
-
                 });
         });
-
     } catch (error) {
         console.log(error)
     }
@@ -135,7 +133,6 @@ app.get('/users', function (req, res, next) {
                 res.json(err);
 
             res.status(200).render('users', { data: users, isadmin: req.session.isadmin });
-
         });
     });
 });
@@ -145,7 +142,6 @@ app.post('/add_user', function (req, res, next) {
         var data = req.body;
         data.created_at = getDateTime();
         data.password = sha256(req.body.password);
-
         conn.query('SELECT * FROM users WHERE email = ?', [req.body.email], (err, users) => {
             if (err)
                 res.json(err);
@@ -170,7 +166,6 @@ app.post('/add_user', function (req, res, next) {
                 });
             }
         });
-
     });
 });
 
@@ -224,7 +219,6 @@ app.get('/devices', function (req, res, next) {
 
 app.post('/add_device', function (req, res, next) {
     req.getConnection((err, conn) => {
-
         conn.query('SELECT * FROM devices WHERE name = ?', [req.body.name], (err, devices) => {
             if (err)
                 res.json(err);
@@ -247,7 +241,6 @@ app.post('/add_device', function (req, res, next) {
                 });
             }
         });
-
     });
 });
 
@@ -295,7 +288,6 @@ app.get('/devices_types', function (req, res, next) {
                 res.json(err);
 
             res.status(200).render('devices_types', { data: devices_types });
-
         });
     });
 });
@@ -313,7 +305,6 @@ app.get('/device_list', function (req, res, next) {
 
 app.post('/add_device_type', function (req, res, next) {
     req.getConnection((err, conn) => {
-
         conn.query('SELECT * FROM devices_types WHERE name = ? AND device_id = ?', [req.body.name, req.body.device_id], (err, devices) => {
             if (err)
                 res.json(err);
@@ -336,7 +327,6 @@ app.post('/add_device_type', function (req, res, next) {
                 });
             }
         });
-
     });
 });
 
@@ -411,7 +401,6 @@ app.post('/add_manufacturer', function (req, res, next) {
                 });
             }
         });
-
     });
 });
 
@@ -464,7 +453,6 @@ app.get('/breakdowns', function (req, res, next) {
 
 app.post('/add_breakdown', function (req, res, next) {
     req.getConnection((err, conn) => {
-
         conn.query('SELECT * FROM breakdowns WHERE name = ? AND device_id = ?', [req.body.name, req.body.device_id], (err, devices) => {
             if (err)
                 res.json(err);
@@ -487,7 +475,6 @@ app.post('/add_breakdown', function (req, res, next) {
                 });
             }
         });
-
     });
 });
 
@@ -604,12 +591,43 @@ app.post('/edit_client/:id', function (req, res, next) {
             if (err)
                 res.json(err);
     
-            res.status(200).json({ data: 'Cliente Actualizado' });
+            res.status(200).json({ data: 'Cliente Actualizado' }); 
         });
     });
 });
 // End CLIENTS
+// REPARATIONS
+app.get('/reparations', function (req, res, next) {
+    let  sql = 'SELECT * FROM reparations' 
+    //sql += 'INNER JOIN states ON states.STATEID = clients.state_id;';
+    req.getConnection((err, conn) => {
+        conn.query(sql, (err, reparations) => {
+            if (err)
+                res.json(err);
 
+            res.status(200).render('reparations', { data: reparations });
+        });
+    });
+});
+
+app.get('/add_reparation', function (req, res, next) {
+    let  sqlClients = 'SELECT id, name, lastname FROM clients'; 
+    let  sqlUsers = 'SELECT id, name FROM users WHERE isadmin = 0';
+    let  sqlDevices = 'SELECT id, name FROM devices';
+    req.getConnection((err, conn) => {
+        conn.query('SELECT id, name, lastname FROM clients; SELECT id, name FROM users WHERE isadmin = 0; SELECT id, name FROM devices', (err, results) => {
+            if (err)
+                res.json(err);
+
+                res.status(200).render('add_reparation', { 
+                    clients: results[0],
+                    technics : results[1],
+                    devices: results[2]
+                });
+        });     
+    });
+});
+// END REPARATIONS
 // Static Files
 app.use('/public', express.static(__dirname + '/public'));
 app.listen(3000, () => {
