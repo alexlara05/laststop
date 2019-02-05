@@ -598,8 +598,8 @@ app.post('/edit_client/:id', function (req, res, next) {
 // End CLIENTS
 // REPARATIONS
 app.get('/reparations', function (req, res, next) {
-    let  sql = 'SELECT * FROM reparations' 
-    //sql += 'INNER JOIN states ON states.STATEID = clients.state_id;';
+    let  sql = 'SELECT reparations.id, reparations.created_at, reparations.reparation_type, reparations.payment_type, reparations.reparation_code, reparations.actual_status_id, reparations.stimate_date, clients.name clientname, clients.lastname, clients.phone, clients.address, clients.city, clients.apt_unit, states.stateid, devices.name device_name, status.name actual_status FROM reparations INNER JOIN clients ON clients.id = reparations.client_id INNER JOIN states ON states.STATEID = clients.state_id INNER JOIN status ON status.id = reparations.actual_status_id INNER JOIN devices ON devices.id = reparations.device_id;';
+
     req.getConnection((err, conn) => {
         conn.query(sql, (err, reparations) => {
             if (err)
@@ -611,9 +611,6 @@ app.get('/reparations', function (req, res, next) {
 });
 
 app.get('/add_reparation', function (req, res, next) {
-    let  sqlClients = 'SELECT id, name, lastname FROM clients'; 
-    let  sqlUsers = 'SELECT id, name FROM users WHERE isadmin = 0';
-    let  sqlDevices = 'SELECT id, name FROM devices';
     req.getConnection((err, conn) => {
         conn.query('SELECT id, name, lastname FROM clients; SELECT id, name FROM users WHERE isadmin = 0; SELECT id, name FROM devices', (err, results) => {
             if (err)
@@ -627,6 +624,60 @@ app.get('/add_reparation', function (req, res, next) {
         });     
     });
 });
+
+app.post('/add_reparation', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        var formData = req.body;
+        if(formData.reparation_type != 0 
+            && formData.client_id != 0 
+            && formData.stimate_date != '' 
+            && formData.device_id != 0 
+            && formData.device_type_id != 0
+            && formData.breakdowns != []
+            ){
+            req.body.created_by_id = req.session.userid;
+            var objBreakdowns = req.body.breakdowns;
+            var strBreakdowns = '';
+            req.body.actual_status_id = 1;
+            req.body.reparation_code = Math.floor(100000 + Math.random() * 900000);
+
+            for (let i = 0; i < objBreakdowns.length; i++) {
+                const element = objBreakdowns[i];
+                strBreakdowns += element + (i + 1 < objBreakdowns.length ? ',' : '');
+                req.body.breakdowns = strBreakdowns;
+            }
+
+            conn.query('INSERT INTO reparations set ?', [req.body], (err, results) => {
+                if (err)
+                    res.json(err);
+
+                res.status(200).json({ ok: true, redirect: '/reparations'});
+            });  
+
+        }else{
+            res.status(200).json({ ok: false, error: 'Ha ocurrido un error al insertar los datos. Verifica que has llenado correctamente el formulario' });
+        }
+    });
+});
+
+// Poblate combosboxes
+app.get('/get_devices_types_by_id/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT * FROM devices_types WHERE device_id = ?; SELECT * FROM manufacturers WHERE device_id = ?; SELECT * FROM breakdowns WHERE device_id = ?',
+        [req.params.id, req.params.id, req.params.id], (err, results) => {
+            if (err)
+                res.json(err);
+
+                res.status(200).json({
+                    devices_types: results[0],
+                    manufacturers: results[1],
+                    breakdowns: results[2]
+                });
+        });     
+    });
+});
+
+
 // END REPARATIONS
 // Static Files
 app.use('/public', express.static(__dirname + '/public'));

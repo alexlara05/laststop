@@ -1,172 +1,278 @@
 <% include partials/_header %>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
-<div class="container">
-    <div class="top-acc">
-        <h3 class="pull-left">Nueva orden de reparación</h3>
-        <a href="/add_reparation" id="add_reparation" class="add_reparation btn btn-primary pull-right">
-            <i class="fa fa-plus-circle"></i> Guardar reparación
-        </a>
-        <div class="clearfix"></div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-4">
-            <label for="txtState">Tipo de reparación</label>
+<div class="container"> 
+    <form action="/add_reparation" method="POST">
+        <div class="top-acc">
+                <h3 class="pull-left">Nueva orden de reparación</h3>
+                <button type="submit" id="add_reparation" class="add_reparation btn btn-primary pull-right">
+                        <i class="fa fa-plus-circle"></i> Guardar orden
+                    </button>
+                <div class="clearfix"></div>
+            </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label for="cboReparation_type">Tipo de reparación</label>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id=""><i class="fa fa-map"></i></span>
                     </div>
-                    <select id="states" style="width: calc(100% - 41px);height: 36px;">
+                    <select id="cboReparation_type" name="reparation_type" style="width: calc(100% - 41px);height: 36px;" reqiored>
                         <option style="display: none" value="0">Seleccione</option>
-                        <option value="1">Domestica</option>
-                        <option value="2">Comercial</option>
+                        <option value="Domestica">Domestica</option>
+                        <option value="Comercial">Comercial</option>
                     <select>
                 </div>
-        </div>
-        <div class="col-md-4">
-            <label for="txtState">Forma de pago</label>
+            </div>
+            <div class="col-md-4">
+                <label for="txtState">Forma de pago</label>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id=""><i class="fa fa-usd"></i></span>
                     </div>
-                    <select id="states" style="width: calc(100% - 35px);height: 36px;">
+                    <select id="cboPayment_type" style="width: calc(100% - 35px);height: 36px;" name="payment_type">
                         <option style="display: none" value="0">Seleccione</option>
-                        <option value="1">Pago</option>
-                        <option value="2">Garantía</option>
+                        <option value="Pago">Pago</option>
+                        <option value="Garantia">Garantía</option>
                     <select>
                 </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-row mb-2">
-                <label for="txtApt">Costo del chequeo</label>
+            </div>
+            <div class="col-md-4">
+                <div class="form-row mb-2">
+                    <label for="txtCheck_price">Costo del chequeo</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id=""><i class="fa fa-calculator"></i></span>
+                        </div>
+                        <input type="number" step="any" class="form-control" value="0.00" name="check_price" id="txtCheck_price" placeholder="Costo del chequeo">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="cboClients">Cliente</label>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id=""><i class="fa fa-calculator"></i></span>
+                        <span class="input-group-text" id=""><i class="fa fa-user"></i></span>
                     </div>
-                    <input type="number" class="form-control" id="txtApt" placeholder="Costo del chequeo">
+                    <select id="cboClients" style="width: calc(100% - 80px);" name="client_id">
+                        <option style="display: none" value="0">Seleccione</option>
+                        <% for(var i = 0; i < clients.length; i++) { %>
+                        <option value="<%= clients[i].id %>">
+                            <%= clients[i].name %>
+                            <%= clients[i].lastname %>
+                        </option>
+                        <% } %>
+                    </select>
+                    <a href="#" class="input-group-text" id=""><i class="fa fa-user-plus"></i></a>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <label for="txtState">Cliente</label>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id=""><i class="fa fa-user"></i></span>
-                </div>
-                <select id="clients" style="width: calc(100% - 80px);">
-                    <option style="display: none" value="0">Seleccione</option>
-                    <% for(var i = 0; i < clients.length; i++) { %>
-                        <option value="<%= clients[i].id %>"><%= clients[i].name %> <%= clients[i].lastname %></option>
-                    <% } %>
-                </select>
-                <a href="#" class="input-group-text" id=""><i class="fa fa-user-plus"></i></a>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <label for="txtState">Tecnico a asignar</label>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id=""><i class="fa fa-user-md"></i></span>
-                </div>
-                <select id="technics" style="width: calc(100% - 37px);">
-                    <option style="display: none" value="0">Seleccione</option>
-                    <% for(var i = 0; i < technics.length; i++) { %>
-                        <option value="<%= technics[i].id %>"><%= technics[i].name %></option>
-                    <% } %>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-row mb-2">
-                <label for="txtApt">Fecha estimada</label>
+            <div class="col-md-4">
+                <label for="cboTechnics">Tecnico a asignar</label>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id=""><i class="fa fa-calendar"></i></span>
+                        <span class="input-group-text" id=""><i class="fa fa-user-md"></i></span>
                     </div>
-                    <input type="date" class="form-control" id="txtApt" placeholder="Fecha estimada del chequeo">
+                    <select id="cboTechnics" name="user_id" style="width: calc(100% - 37px);">
+                        <option style="display: none" value="0">Seleccione</option>
+                        <% for(var i = 0; i < technics.length; i++) { %>
+                        <option value="<%= technics[i].id %>">
+                            <%= technics[i].name %>
+                        </option>
+                        <% } %>
+                    </select>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <label for="txtState">Electrodomestico</label>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id=""><i class="fa fa-microchip"></i></span>
+            <div class="col-md-4">
+                <div class="form-row mb-2">
+                    <label for="txtStimateDate">Fecha estimada</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id=""><i class="fa fa-calendar"></i></span>
+                        </div>
+                        <input type="date" name="stimate_date" class="form-control" id="txtStimateDate" required placeholder="Fecha estimada del chequeo">
+                    </div>
                 </div>
-                <select id="devices" style="width: calc(100% - 38px); height: 36px;">
-                    <option style="display: none" value="0">Seleccione</option>
-                    <% for(var i = 0; i < devices.length; i++) { %>
-                        <option value="<%= devices[i].id %>"><%= devices[i].name %></option>
-                    <% } %>
-                </select>
             </div>
-        </div>
-        <div class="col-md-4">
-            <label for="txtState">Tipo</label>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id=""><i class="fa fa-microchip"></i></span>
-                </div>
-                <select id="technics" style="width: calc(100% - 38px);">
-                    <option style="display: none" value="0">Seleccione</option>
-                    <option value="1">Pago</option>
-                    <option value="2">Garantía</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <label for="txtState">Marca</label>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id=""><i class="fa fa-microchip"></i></span>
-                </div>
-                <select id="technics" style="width: calc(100% - 38px);">
-                    <option style="display: none" value="0">Seleccione</option>
-                    <option value="1">Pago</option>
-                    <option value="2">Garantía</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-row mb-2">
-                <label for="txtApt">Modelo</label>
+            <div class="col-md-4">
+                <label for="txtState">Electrodomestico</label>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id=""><i class="fa fa-microchip"></i></span>
                     </div>
-                    <input type="text" class="form-control" id="txtApt" placeholder="Model del electrodomestico">
+                    <select id="devices" name="device_id" style="width: calc(100% - 38px); height: 36px;">
+                        <option style="display: none" value="0">Seleccione</option>
+                        <% for(var i = 0; i < devices.length; i++) { %>
+                        <option value="<%= devices[i].id %>">
+                            <%= devices[i].name %>
+                        </option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="devTypes">Tipo</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id=""><i class="fa fa-microchip"></i></span>
+                    </div>
+                    <select id="devTypes" name="device_type_id" style="width: calc(100% - 38px); height: 36px;">
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="cboManufacturers">Marca</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id=""><i class="fa fa-microchip"></i></span>
+                    </div>
+                    <select id="cboManufacturers" name="manufacturer_id" style="width: calc(100% - 38px); height: 36px;">
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-row mb-2">
+                    <label for="txtModel">Modelo</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id=""><i class="fa fa-microchip"></i></span>
+                        </div>
+                        <input type="text" name="device_model" class="form-control" id="txtModel" placeholder="Model del electrodomestico">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <label for="cboBreakdowns">Posibles fallas en este electrodomestico</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id=""><i class="fa fa-free-code-camp"></i></span>
+                    </div>
+                    <select id="cboBreakdowns" name="breakdowns[]" style="width: calc(100% - 45px); height: 36px;" multiple>
+                    </select>
+                </div>
+            </div>
+            <div class="input-field col-lg-12">
+                <div class="form-group">
+                    <label for="txtComments">Comentarios</label> <i class="fa fa-commenting"></i>
+                    <textarea class="form-control" name="comments" id="txtComments" placeholder="Notas y/o comentarios" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="input-field col-lg-12">
+                <div class="form-group">
+                    <label for="txtDiagnostic">Diagnosticos del tecnico</label> <i class="fa fa-exclamation-triangle"></i>
+                    <textarea class="form-control" name="diagnostics" id="txtDiagnostic" placeholder="Comentarios / Diagnostigo del tecnico"
+                        rows="3" disabled></textarea>
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
-            <label for="txtState">Posibles fallas en este electrodomestico</label>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id=""><i class="fa fa-free-code-camp"></i></span>
-                </div>
-                <select id="technics" style="width: calc(100% - 45px); height: 36px;" multiple>
-                    <option style="display: none" value="0">Seleccione</option>
-                    <option value="1">Pago</option>
-                    <option value="2">Garantía</option>
-                </select>
-            </div>
-        </div>
-        <div class="input-field col-lg-12">
-            <div class="form-group">
-                <label for="txtComments">Comentarios</label> <i class="fa fa-commenting"></i>
-                <textarea class="form-control" id="txtComments" placeholder="Notas y/o comentarios" rows="3"></textarea>
-            </div>
-        </div>
-        <div class="input-field col-lg-12">
-            <div class="form-group">
-                <label for="txtComments">Diagnosticos del tecnico</label> <i class="fa fa-exclamation-triangle"></i>
-                <textarea class="form-control" id="txtComments" placeholder="Comentarios / Diagnostigo del tecnico" rows="3"></textarea>
-            </div>
-        </div>
-    </div>
+    </form>
 </div>
 <% include partials/_footer %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 <script>
-$('#clients, #technics').chosen();
+    $('select').chosen({
+        no_results_text: "No se encontraron registros",
+        placeholder_text_multiple: "Selecciones las fallas actuales en este electrodomestico",
+        placeholder_text_single: "Seleccione una opción"
+    });
+
+    $('#devices').change(function () {
+        let _this = $(this);
+        let cboDeviceTypes = $('#devTypes');
+        let cboManufacturers = $('#cboManufacturers');
+        let cboBreakdowns = $('#cboBreakdowns');
+
+        // Poblating 
+        $.ajax({
+            'url': '/get_devices_types_by_id/' + _this.val(),
+            'method': 'GET',
+            'dataType': 'json',
+            success: function (response) {
+                cboDeviceTypes.text('');
+                cboManufacturers.text('');
+                cboBreakdowns.text('');
+                const devArray = response.devices_types;
+                const manArray = response.manufacturers;
+                const breakdownArray = response.breakdowns;
+                let htmlDevTypes = '<option style="display: none" value="0">Seleccione el tipo</option>';
+                let htmlManufacturers = '<option style="display: none" value="0">Seleccione la marca</option>';
+                let htmlBreakdowns = '<option style="display: none" value="0">Seleccione las fallas</option>';
+
+                for (let i = 0; i < devArray.length; i++) { // DEVICES TYPES
+                    const device = devArray[i];
+                    htmlDevTypes += '<option value="' + device.id + '">' + device.name + '</option>';
+                }
+                cboDeviceTypes.append(htmlDevTypes);
+
+                for (let i = 0; i < manArray.length; i++) { // MANUFACTURES
+                    const manufacturer = manArray[i];
+                    htmlManufacturers += '<option value="' + manufacturer.id + '">' + manufacturer.name + '</option>';
+                }
+                cboManufacturers.append(htmlManufacturers);
+
+                for (let i = 0; i < breakdownArray.length; i++) { // BREAKDOWNS
+                    const breakdown = breakdownArray[i];
+                    htmlBreakdowns += '<option value="' + breakdown.id + '">' + breakdown.name + '</option>';
+                }
+                cboBreakdowns.append(htmlBreakdowns);
+                $('select').trigger('chosen:updated');
+            },
+            error: function (err) {
+                alert('Ocurrió un error por favor intente de nuevo');
+                console.log(err);
+            }
+        });
+    });
+
+    $('form').submit(function(e){
+        e.preventDefault();
+        validateSelect('cboReparation_type', 'Debes seleccionar un tipo de reparación');
+        validateSelect('cboPayment_type', 'Debes seleccionar el modo de pago');
+        validateSelect('devices', 'Debes seleccionar el electrodomestico');
+        validateSelect('devTypes', 'Selecciona el tipo de electrodomestico');
+        validateSelect('cboBreakdowns', 'Debes seleccionar las fallas de este electrodomestico');
+        validateSelect('cboClients', 'Debes seleccionar el cliente');
+        
+        var form = $(this);
+        var url = form.attr('action');
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // serializes the form's elements.
+            success: function (response) {
+                if(response.ok){
+                    window.location.href = response.redirect;
+                }else{
+                    console.log(response)
+                }
+            },
+            error: function (err) {
+                alert('Ocurrió un error por favor intente de nuevo');
+                console.log(err);
+            }
+        });
+        
+    });
+
+    function validateSelect(select, message){
+        var cbo = $('#'+select).val();
+        if(cbo == 0 || cbo == null || cbo == []){
+            $('<span class="badge badge-danger cbo_error">'+message+'</span>').insertAfter('#'+select+'_chosen');
+        }else{
+            $('.cbo_error').each(function() {
+                $(this).hide('slow').remove()
+            });
+        }
+        return
+    }
+
+    $('#cboPayment_type').change(function() {
+        var _this = $(this);
+        var txtCheckPrice = $('#txtCheck_price');
+        if(_this.val() == 'Garantia'){
+            txtCheckPrice.val('0.00').attr('disabled', 'disabled');
+        }else{
+            txtCheckPrice.removeAttr('disabled');
+        }
+    })
 </script>

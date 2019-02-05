@@ -5,7 +5,7 @@
     <div class="top-acc">
         <h3 class="pull-left">Tabla de reparaciones</h3>
         <a href="/add_reparation" id="add_reparation" class="add_reparation btn btn-primary pull-right">
-            <i class="fa fa-plus-circle"></i> Agregar reparación
+            <i class="fa fa-plus-circle"></i> Nueva orden de reparación
         </a>
         <div class="clearfix"></div>
     </div>
@@ -14,12 +14,13 @@
             <thead>
                 <tr>
                     <th>Id</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
+                    <th>Codigo</th>
+                    <th>A reparar</th>
+                    <th>Cliente</th>                    
                     <th>Dirección</th>
                     <th>Teléfono</th>
-                    <th>Compañia</th>
-                    <th>Fecha creación</th>
+                    <th>Fecha Creación</th>
+                    <th>Estado</th>
                     <th></th>
                 </tr>
             </thead>
@@ -30,28 +31,27 @@
                         <%= data[i].id %>
                     </td>
                     <td>
-                        <%= data[i].name %>
+                        <%= data[i].reparation_code %>
                     </td>
                     <td>
-                        <%= data[i].lastname %>
+                        <%= data[i].device_name %>
                     </td>
                     <td>
-                        <a target="_blank" href="http://maps.google.com/?q=<%= data[i].address %>+<%= data[i].city %>+<%= data[i].statecode %>"><%= data[i].address %>, <%= data[i].city %>, <%= data[i].statecode %></a>
+                        <%= data[i].clientname %> <%= data[i].lastname %>
                     </td>
                     <td>
-                        <%= data[i].phone %>
+                        <a target="_blank" href="http://maps.google.com/?q=<%= data[i].address %>+<%= data[i].city %>+<%= data[i].stateid %>"><%= data[i].address %>, <%= data[i].city %>, <%= data[i].stateid %></a>
                     </td>
                     <td>
-                        <%= data[i].company %>
+                        <a href="tel:<%= data[i].phone %>"><%= data[i].phone %></a>
                     </td>
+                    <td><%= data[i].created_at.toLocaleString() %></td>
                     <td>
-                        <%= data[i].created_at.toLocaleString() %>
+                        <span class="status status-<%= data[i].actual_status_id %>"><%= data[i].actual_status %></span>
                     </td>
                     <td align="center">
                         <a href="/edit_client/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
                                 class="fa fa-pencil" aria-hidden="true"></i></a>
-                        <a href="/delete_client/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-danger btn-delete"><i
-                                class="fa fa-trash" aria-hidden="true"></i></a>
                     </td>
                 </tr>
 
