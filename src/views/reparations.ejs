@@ -20,6 +20,7 @@
                     <th>Dirección</th>
                     <th>Teléfono</th>
                     <th>Fecha Creación</th>
+                    <th>Fecha Estimada</th>
                     <th>Estado</th>
                     <th></th>
                 </tr>
@@ -45,12 +46,13 @@
                     <td>
                         <a href="tel:<%= data[i].phone %>"><%= data[i].phone %></a>
                     </td>
-                    <td><%= data[i].created_at.toLocaleString() %></td>
-                    <td>
+                    <td><%= data[i].created_at.toLocaleString('en').split(",")[0] %></td>
+                    <td><%= data[i].stimate_date.toLocaleString('en').split(",")[0] %></td>
+                    <td align="center">
                         <span class="status status-<%= data[i].actual_status_id %>"><%= data[i].actual_status %></span>
                     </td>
                     <td align="center">
-                        <a href="/edit_client/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
+                        <a href="/edit_reparation/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
                                 class="fa fa-pencil" aria-hidden="true"></i></a>
                     </td>
                 </tr>
@@ -185,197 +187,9 @@
             "order": [[0, "desc"]],
             "columnDefs": [
                 { "width": "5%", "targets": 0 },
-                { "width": "10%", "targets": 7 }
+                { "width": "8%", "targets": 7 },
+                { "width": "8%", "targets": 6 }
             ]
         });
-
-        $('#add_client').click(function () {
-            $('.modal-title').text('Crear nuevo cliente');
-            $('#mode').val('1');
-            var stateList = $('#states');
-
-            $.ajax({
-                'url': '/states',
-                'method': 'GET',
-                'dataType': 'json',
-                success: function (response) {
-                    const devArray = response.data;
-                    let html = '';
-                    for (let i = 0; i < devArray.length; i++) {
-                        const state = devArray[i];
-                        html += '<option value="' + state.STATEID + '">' + state.FULLNAME + '</option>';
-                    }
-                    stateList.append(html);
-                    $('#clientModal').modal();
-                    console.log(response)
-                },
-                error: function (err) {
-                    alert('Ocurrió un error por favor intente de nuevo');
-                    console.log(err);
-                }
-            });
-        });
-
-        $('.btn-save').click(function () {
-            var loader = $('#loading');
-            var txtName = $('#txtName').val().trim();
-            var txtLastName = $('#txtLastName').val().trim();
-            var txtCompany = $('#txtCompany').val().trim();
-            var txtPhone = $('#txtPhone').val().trim();
-            var txtAddress = $('#txtAddress').val().trim();
-            var txtCity = $('#txtCity').val().trim();
-            var txtApt = $('#txtApt').val().trim();
-            var txtComments = $('#txtComments').val().trim();
-            var cboState = $('#states').val();
-            var data = {
-                name: txtName,
-                lastname: txtLastName,
-                company: txtCompany,
-                address: txtAddress,
-                phone: txtPhone,
-                city: txtCity,
-                comments: txtComments,
-                apt_unit: txtApt,
-                state_id: cboState
-            }
-            var mode = $('#mode').val();
-            if (txtName == '') {
-                alert('Debes escribir el nombre');
-                return;
-            }
-            if (txtAddress == '') {
-                alert('Debes escribir La dirección');
-                return;
-            }
-            if (txtCity == '') {
-                alert('Debes escribir la ciudad para la dirección');
-                return;
-            }
-            if (txtPhone == '') {
-                alert('Debes escribir un numero de telefono');
-                return;
-            }
-            if (cboState == 0) {
-                alert('Debes seleccionar un estado para la dirección');
-                return;
-            }
-
-            var url = '';
-            if (mode == 1) { // Add
-                url = '/add_client';
-            } else if (mode == 2) { // Edit
-                url = '/edit_client/' + $('#clientid').val();
-            }
-
-            $.ajax({
-                'url': url,
-                'method': 'POST',
-                'data': data,
-                'dataType': 'json',
-                success: function (response) {
-                    loader.css('display', 'none');
-
-                    if (response.stateexist) {
-                        alert(response.message);
-                        return;
-                    } else {
-                        $('#clientModal').modal('hide');
-                        location.reload();
-                    }
-                },
-                beforeSend: function () {
-                    loader.css('display', 'block');
-                },
-                error: function (err) {
-                    loader.css('display', 'none');
-                    console.log(err);
-                }
-            });
-
-        });
-
-        $('.btn-delete').click(function (e) {
-            e.preventDefault();
-            var option = confirm("Seguro que quieres eliminar este cliente y todo su historial de registros?");
-            if (option) {
-                $.ajax({
-                    'url': '/delete_client/' + $(this).attr('uid'),
-                    'method': 'POST',
-                    'dataType': 'json',
-                    success: function (response) {
-                        alert(response.message);
-                        location.reload();
-                    },
-                    error: function (err) {
-                        alert('Ocurrió un error por favor intente de nuevo');
-                        console.log(err);
-                    }
-                });
-            }
-        });
-
-        $('.btn-edit').click(function (e) {
-            e.preventDefault();
-            $('#mode').val(2);
-            $('#clientid').val($(this).attr('uid'));
-            $('.modal-title').text('Editar cliente');
-            $('#clientModal').modal();
-
-            var stateList = $('#states');
-
-            $.ajax({ // poblate cbo 
-                'url': '/states',
-                'method': 'GET',
-                'dataType': 'json',
-                success: function (response) {
-                    const devArray = response.data;
-                    let html = '';
-                    for (let i = 0; i < devArray.length; i++) {
-                        const state = devArray[i];
-                        html += '<option value="' + state.STATEID + '">' + state.FULLNAME + '</option>';
-                    }
-                    stateList.append(html);
-                    $('#clientModal').modal();
-                },
-                error: function (err) {
-                    alert('Ocurrió un error por favor intente de nuevo');
-                    console.log(err);
-                }
-            });
-
-            $.ajax({
-                'url': '/edit_client/' + $(this).attr('uid'),
-                'method': 'GET',
-                'dataType': 'json',
-                success: function (response) {
-                    $('#txtName').val(response.data[0].name);
-                    $('#txtLastName').val(response.data[0].lastname);
-                    $('#txtPhone').val(response.data[0].phone);
-                    $('#txtCompany').val(response.data[0].company);
-                    $('#txtAddress').val(response.data[0].address);
-                    $('#txtCity').val(response.data[0].city);
-                    $('#txtApt').val(response.data[0].apt_unit);
-                    $('#txtComments').val(response.data[0].comments);
-                    $('#states').val(response.data[0].state_id);
-                },
-                error: function (err) {
-                    alert('Ocurrió un error por favor intente de nuevo');
-                    console.log(err);
-                }
-            });
-
-        });
-    });
-
-    $('#clientModal').on('hidden.bs.modal', function () {
-        $('#txtName').val('');
-        $('#txtLastName').val('');
-        $('#txtPhone').val('');
-        $('#txtCompany').val('');
-        $('#txtAddress').val('');
-        $('#txtCity').val('');
-        $('#txtApt').val('');
-        $('#txtComments').val('');
-        $('#states').val('0');
     });
 </script>

@@ -46,6 +46,16 @@ app.use((req, res, next) => {
     next()
 });
 
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    console.log(err.message);
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
+});
+
 // Routes
 app.get('/', function (req, res, next) {
     res.render('home');
@@ -124,6 +134,9 @@ app.get('/logout', function (req, res, next) {
         }
     });
 });
+/* //#region MIDDLEWARES */
+
+/* //#endregion */
 
 // USERS
 app.get('/users', function (req, res, next) {
@@ -544,7 +557,8 @@ app.post('/add_client', function (req, res, next) {
 
                     res.status(200).json({
                         stateexist: false,
-                        message: 'Se ha creado un nuevo cliente'
+                        message: 'Se ha creado un nuevo cliente',
+                        client_id: clients.insertId
                     });
                 });
             }
@@ -599,7 +613,6 @@ app.post('/edit_client/:id', function (req, res, next) {
 // REPARATIONS
 app.get('/reparations', function (req, res, next) {
     let  sql = 'SELECT reparations.id, reparations.created_at, reparations.reparation_type, reparations.payment_type, reparations.reparation_code, reparations.actual_status_id, reparations.stimate_date, clients.name clientname, clients.lastname, clients.phone, clients.address, clients.city, clients.apt_unit, states.stateid, devices.name device_name, status.name actual_status FROM reparations INNER JOIN clients ON clients.id = reparations.client_id INNER JOIN states ON states.STATEID = clients.state_id INNER JOIN status ON status.id = reparations.actual_status_id INNER JOIN devices ON devices.id = reparations.device_id;';
-
     req.getConnection((err, conn) => {
         conn.query(sql, (err, reparations) => {
             if (err)
@@ -616,11 +629,11 @@ app.get('/add_reparation', function (req, res, next) {
             if (err)
                 res.json(err);
 
-                res.status(200).render('add_reparation', { 
-                    clients: results[0],
-                    technics : results[1],
-                    devices: results[2]
-                });
+            res.status(200).render('add_reparation', {
+                clients: results[0],
+                technics: results[1],
+                devices: results[2]
+            });
         });     
     });
 });
@@ -660,6 +673,61 @@ app.post('/add_reparation', function (req, res, next) {
     });
 });
 
+app.get('/edit_reparation/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT * FROM reparations WHERE id = ?; SELECT id, name, lastname FROM clients; SELECT id, name FROM users WHERE isadmin = 0; SELECT * FROM devices; SELECT * FROM breakdowns; SELECT * FROM devices_types;SELECT * FROM manufacturers; SELECT * FROM status;', 
+        [req.params.id], (err, results) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).render('edit_reparation', {
+                reparation: results[0],
+                clients: results[1],
+                technics: results[2],
+                devices: results[3],
+                breakdowns: results[4],
+                devices_types: results[5],
+                manufacturers: results[6],
+                status: results[7]
+            });
+        });
+    });
+});
+
+app.post('/edit_reparation/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        var formData = req.body;
+        if(formData.reparation_type != 0 
+            && formData.client_id != 0 
+            && formData.stimate_date != '' 
+            && formData.device_id != 0 
+            && formData.device_type_id != 0
+            && formData.breakdowns != []
+            ){
+            var objBreakdowns = req.body.breakdowns;
+            var strBreakdowns = '';
+
+            if(formData.payment_type == 'Garantia') req.body.check_price = 0.00
+
+            for (let i = 0; i < objBreakdowns.length; i++) {
+                const element = objBreakdowns[i];
+                strBreakdowns += element + (i + 1 < objBreakdowns.length ? ',' : '');
+                req.body.breakdowns = strBreakdowns;
+            }
+
+            conn.query('UPDATE reparations set ? WHERE id = ?', [req.body, req.params.id], (err, results) => {
+                if (err)
+                    res.json(err);
+
+                res.status(200).json({ ok: true, redirect: '/reparations'});
+            });  
+
+        }else{
+            res.status(200).json({ ok: false, error: 'Ha ocurrido un error al insertar los datos. Verifica que has llenado correctamente el formulario' });
+        }
+    });
+});
+
 // Poblate combosboxes
 app.get('/get_devices_types_by_id/:id', function (req, res, next) {
     req.getConnection((err, conn) => {
@@ -668,11 +736,11 @@ app.get('/get_devices_types_by_id/:id', function (req, res, next) {
             if (err)
                 res.json(err);
 
-                res.status(200).json({
-                    devices_types: results[0],
-                    manufacturers: results[1],
-                    breakdowns: results[2]
-                });
+            res.status(200).json({
+                devices_types: results[0],
+                manufacturers: results[1],
+                breakdowns: results[2]
+            });
         });     
     });
 });

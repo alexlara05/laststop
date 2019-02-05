@@ -45,7 +45,7 @@
                         <%= data[i].company %>
                     </td>
                     <td>
-                        <%= data[i].created_at.toLocaleString() %>
+                        <%= data[i].created_at.toLocaleString('en').split(",")[0] %>
                     </td>
                     <td align="center">
                         <a href="/edit_client/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i

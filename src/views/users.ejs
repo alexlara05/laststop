@@ -38,7 +38,7 @@
                         <%= data[i].phone %>
                     </td>
                     <td>
-                        <%= data[i].created_at.toLocaleString() %>
+                        <%= data[i].created_at.toLocaleString('en').split(",")[0] %>
                     </td>
                     <td align="center">
                         <% if(data[i].isadmin == 1){ %>
