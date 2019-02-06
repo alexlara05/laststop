@@ -4,6 +4,9 @@
     #cboBreakdowns_chosen .chosen-choices {
         background: #a9cfd8;
     }
+    #states_chosen{
+    width: calc(100% - 41px) !important;
+}
 </style>
 <div class="container"> 
     <form action="/add_reparation" method="POST">
@@ -68,7 +71,7 @@
                         </option>
                         <% } %>
                     </select>
-                    <a href="#" class="input-group-text" id=""><i class="fa fa-user-plus"></i></a>
+                    <a href="#" class="input-group-text" id="add_client"><i class="fa fa-user-plus"></i></a>
                 </div>
             </div>
             <div class="col-md-4">
@@ -170,6 +173,119 @@
             </div>
         </div>
     </form>
+    <!-- MODAL -->
+    <div class="modal fade" id="clientModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
+    aria-labelledby="clientModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Clientes</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="form-row mb-3">
+                        <label for="txtName">Información del cliente</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id=""> <i class="fa fa-user"></i></span>
+                            </div>
+                            <input type="text" class="form-control" id="txtName" placeholder="Nombre">
+                            <input type="text" class="form-control" id="txtLastName" placeholder="Apellido">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtName">Compañía</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-building"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtCompany" placeholder="Compañía">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtPhone">Teléfono</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtPhone" placeholder="Teléfono">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtAddress">Dirección</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-street-view"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtAddress" placeholder="Ej: 000 nombre street">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtCity">Ciudad</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-map-signs"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtCity" placeholder="Nombre de la ciudad">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtState">Estado</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-map"></i></span>
+                                    </div>
+                                    <select id="states" style="width: calc(100% - 41px);height: 36px;">
+                                        <option style="display: none" value="0">Seleccione el estado</option>
+                                        <select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtApt">Apt/Unit</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-home"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtApt" placeholder="Edificio numero">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-field col-lg-12">
+                    <div class="form-group">
+                        <label for="txtClientComments">Comentarios</label> <i class="fa fa-commenting"></i>
+                        <textarea class="form-control" id="txtClientComments" placeholder="Notas y/o comentarios" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <img id="loading" src="/public/images/loading.gif" alt="cargando" style="display: none; width: 100px; height: 36px;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary btn-save">Guardar cliente</button>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 <% include partials/_footer %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
@@ -259,6 +375,106 @@
         
     });
 
+    $('#add_client').click(function () {
+            $('.modal-title').text('Crear nuevo cliente');
+            $('#mode').val('1');
+            var stateList = $('#states');
+
+            $.ajax({
+                'url': '/states',
+                'method': 'GET',
+                'dataType': 'json',
+                success: function (response) {
+                    const devArray = response.data;
+                    let html = '';
+                    for (let i = 0; i < devArray.length; i++) {
+                        const state = devArray[i];
+                        html += '<option value="' + state.STATEID + '">' + state.FULLNAME + '</option>';
+                    }
+                    stateList.append(html);
+                    $('select').trigger('chosen:updated');
+                    $('#clientModal').modal();
+                    console.log(response)
+                },
+                error: function (err) {
+                    alert('Ocurrió un error por favor intente de nuevo');
+                    console.log(err);
+                }
+            });
+        });
+
+    $('.btn-save').click(function () {
+        var loader = $('#loading');
+        var txtName = $('#txtName').val().trim();
+        var txtLastName = $('#txtLastName').val().trim();
+        var txtCompany = $('#txtCompany').val().trim();
+        var txtPhone = $('#txtPhone').val().trim();
+        var txtAddress = $('#txtAddress').val().trim();
+        var txtCity = $('#txtCity').val().trim();
+        var txtApt = $('#txtApt').val().trim();
+        var txtClientComments = $('#txtClientComments').val().trim();
+        var cboState = $('#states').val();
+        var data = {
+            name: txtName,
+            lastname: txtLastName,
+            company: txtCompany,
+            address: txtAddress,
+            phone: txtPhone,
+            city: txtCity,
+            comments: txtClientComments,
+            apt_unit: txtApt,
+            state_id: cboState
+        }
+        var mode = $('#mode').val();
+        if (txtName == '') {
+            alert('Debes escribir el nombre');
+            return;
+        }
+        if (txtAddress == '') {
+            alert('Debes escribir La dirección');
+            return;
+        }
+        if (txtCity == '') {
+            alert('Debes escribir la ciudad para la dirección');
+            return;
+        }
+        if (txtPhone == '') {
+            alert('Debes escribir un numero de telefono');
+            return;
+        }
+        if (cboState == 0) {
+            alert('Debes seleccionar un estado para la dirección');
+            return;
+        }
+
+        $.ajax({
+            'url': '/add_client',
+            'method': 'POST',
+            'data': data,
+            'dataType': 'json',
+            success: function (response) {
+                loader.css('display', 'none');
+
+                if (response.stateexist) {
+                    alert(response.message);
+                    return;
+                } else {
+                    $('#clientModal').modal('hide');
+                    $('#cboClients').append('<option value="'+response.client_id+'" selected>'+txtName+' '+ txtLastName+'</option>');
+                    $('select').trigger('chosen:updated');
+                }
+            },
+            beforeSend: function () {
+                loader.css('display', 'block');
+            },
+            error: function (err) {
+                loader.css('display', 'none');
+                console.log(err);
+            }
+        });
+
+    });
+    
     function validateSelect(select, message){
         var cbo = $('#'+select).val();
         if(cbo == 0 || cbo == null || cbo == []){

@@ -28,32 +28,32 @@
             <tbody>
                 <% for(var i = 0; i < data.length; i++) { %>
                 <tr>
-                    <td align="center">
+                    <td align="center" style="vertical-align: inherit;">
                         <%= data[i].id %>
                     </td>
-                    <td>
+                    <td style="vertical-align: inherit;">
                         <%= data[i].reparation_code %>
                     </td>
-                    <td>
+                    <td style="vertical-align: inherit;">
                         <%= data[i].device_name %>
                     </td>
-                    <td>
+                    <td style="vertical-align: inherit;">
                         <%= data[i].clientname %> <%= data[i].lastname %>
                     </td>
-                    <td>
+                    <td style="vertical-align: inherit;">
                         <a target="_blank" href="http://maps.google.com/?q=<%= data[i].address %>+<%= data[i].city %>+<%= data[i].stateid %>"><%= data[i].address %>, <%= data[i].city %>, <%= data[i].stateid %></a>
                     </td>
-                    <td>
+                    <td style="vertical-align: inherit;">
                         <a href="tel:<%= data[i].phone %>"><%= data[i].phone %></a>
                     </td>
-                    <td><%= data[i].created_at.toLocaleString('en').split(",")[0] %></td>
-                    <td><%= data[i].stimate_date.toLocaleString('en').split(",")[0] %></td>
-                    <td align="center">
+                    <td style="vertical-align: inherit;"><%= data[i].created_at.toLocaleString('en').split(",")[0] %></td>
+                    <td style="vertical-align: inherit;"><%= data[i].stimate_date.toLocaleString('en').split(",")[0] %></td>
+                    <td align="center" style="vertical-align: inherit;">
                         <span class="status status-<%= data[i].actual_status_id %>"><%= data[i].actual_status %></span>
                     </td>
-                    <td align="center">
+                    <td align="center" style="vertical-align: inherit;">
                         <a href="/edit_reparation/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
-                                class="fa fa-pencil" aria-hidden="true"></i></a>
+                        class="fa fa-pencil" aria-hidden="true"></i></a>
                     </td>
                 </tr>
 
