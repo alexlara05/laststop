@@ -1,0 +1,195 @@
+<% include partials/_header %>
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+
+<div class="container">
+    <div class="top-acc">
+        <h3 class="pull-left">Tabla de reparaciones</h3>
+        <a href="/add_reparation" id="add_reparation" class="add_reparation btn btn-primary pull-right">
+            <i class="fa fa-plus-circle"></i> Nueva orden de reparación
+        </a>
+        <div class="clearfix"></div>
+    </div>
+    <div class="table-responsive">
+        <table id="tbl-clients" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Codigo</th>
+                    <th>A reparar</th>
+                    <th>Cliente</th>                    
+                    <th>Dirección</th>
+                    <th>Teléfono</th>
+                    <th>Fecha Creación</th>
+                    <th>Fecha Estimada</th>
+                    <th>Estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(var i = 0; i < data.length; i++) { %>
+                <tr>
+                    <td align="center" style="vertical-align: inherit;">
+                        <%= data[i].id %>
+                    </td>
+                    <td style="vertical-align: inherit;">
+                        <%= data[i].reparation_code %>
+                    </td>
+                    <td style="vertical-align: inherit;">
+                        <%= data[i].device_name %>
+                    </td>
+                    <td style="vertical-align: inherit;">
+                        <%= data[i].clientname %> <%= data[i].lastname %>
+                    </td>
+                    <td style="vertical-align: inherit;">
+                        <a target="_blank" href="http://maps.google.com/?q=<%= data[i].address %>+<%= data[i].city %>+<%= data[i].stateid %>"><%= data[i].address %>, <%= data[i].city %>, <%= data[i].stateid %></a>
+                    </td>
+                    <td style="vertical-align: inherit;">
+                        <a href="tel:<%= data[i].phone %>"><%= data[i].phone %></a>
+                    </td>
+                    <td style="vertical-align: inherit;"><%= data[i].created_at.toLocaleString('en').split(",")[0] %></td>
+                    <td style="vertical-align: inherit;"><%= data[i].stimate_date.toLocaleString('en').split(",")[0] %></td>
+                    <td align="center" style="vertical-align: inherit;">
+                        <span class="status status-<%= data[i].actual_status_id %>"><%= data[i].actual_status %></span>
+                    </td>
+                    <td align="center" style="vertical-align: inherit;">
+                        <a href="/edit_reparation/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
+                        class="fa fa-pencil" aria-hidden="true"></i></a>
+                    </td>
+                </tr>
+
+                <% } %>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<input type="hidden" id="mode">
+<input type="hidden" id="clientid">
+<!-- Modal -->
+<div class="modal fade" id="clientModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="clientModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Clientes</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="form-row mb-3">
+                        <label for="txtName">Información del cliente</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id=""> <i class="fa fa-user"></i></span>
+                            </div>
+                            <input type="text" class="form-control" id="txtName" placeholder="Nombre">
+                            <input type="text" class="form-control" id="txtLastName" placeholder="Apellido">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtName">Compañía</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-building"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtCompany" placeholder="Compañía">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtPhone">Teléfono</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtPhone" placeholder="Teléfono">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtAddress">Dirección</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-street-view"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtAddress" placeholder="Ej: 000 nombre street">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtCity">Ciudad</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-map-signs"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtCity" placeholder="Nombre de la ciudad">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtState">Estado</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-map"></i></span>
+                                    </div>
+                                    <select id="states" style="width: calc(100% - 41px);height: 36px;">
+                                        <option style="display: none" value="0">Seleccione el estado</option>
+                                    <select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtApt">Apt/Unit</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-home"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtApt" placeholder="Edificio numero">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-field col-lg-12">
+                    <div class="form-group">
+                        <label for="txtComments">Comentarios</label> <i class="fa fa-commenting"></i>
+                        <textarea class="form-control" id="txtComments" placeholder="Notas y/o comentarios" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <img id="loading" src="/public/images/loading.gif" alt="cargando" style="display: none; width: 100px; height: 36px;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary btn-save">Guardar cliente</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% include partials/_footer %>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#tbl-clients').DataTable({
+            "order": [[0, "desc"]],
+            "columnDefs": [
+                { "width": "5%", "targets": 0 },
+                { "width": "8%", "targets": 7 },
+                { "width": "8%", "targets": 6 }
+            ]
+        });
+    });
+</script>

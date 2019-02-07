@@ -38,7 +38,7 @@ app.use((req, res, next) => {
             // VERIFY SESSION VARIABLES
             res.status(400).redirect('/login');
 
-        } else if (req.path != '/trepairs' && req.session.isadmin == 0 && req.path != '/logout') {
+        } else if (req.path != '/tech_reparations' && req.session.isadmin == 0 && req.path != '/logout') {
             res.render('accessdenied');
             return;
         }
@@ -97,11 +97,12 @@ app.post('/login', function (req, res, next) {
                         req.session.email = req.body.email;
                         req.session.name = user.name;
                         req.session.isadmin = user.isadmin;
+                        req.session.userphone = user.phone;
 
                         if (user.isadmin == 1) {
                             res.redirect('/');
                         } else if (user.isadmin == 0) {
-                            res.redirect('/trepairs');
+                            res.redirect('/tech_reparations');
                         }
                     } else {
                         res.render('login', { error: 'Error Login, Por favor intente de nuevo' });
@@ -113,8 +114,16 @@ app.post('/login', function (req, res, next) {
     }
 });
 
-app.get('/trepairs', function (req, res, next) {
-    res.render('trepairs');
+app.get('/tech_reparations', function (req, res, next) {
+    let  sql = 'SELECT reparations.id, reparations.created_at, reparations.reparation_type, reparations.payment_type, reparations.reparation_code, reparations.actual_status_id, reparations.stimate_date, clients.name clientname, clients.lastname, clients.phone, clients.address, clients.city, clients.apt_unit, states.stateid, devices.name device_name, status.name actual_status FROM reparations INNER JOIN clients ON clients.id = reparations.client_id INNER JOIN states ON states.STATEID = clients.state_id INNER JOIN status ON status.id = reparations.actual_status_id INNER JOIN devices ON devices.id = reparations.device_id WHERE user_id = ?;';
+    req.getConnection((err, conn) => {
+        conn.query(sql, [req.session.userid], (err, reparations) => {
+            if (err)
+                res.json(err); 
+
+            res.status(200).render('tech_reparations', { data: reparations });
+        });
+    });
 });
 
 app.get('/accessdenied', function (req, res, next) {
@@ -134,9 +143,6 @@ app.get('/logout', function (req, res, next) {
         }
     });
 });
-/* //#region MIDDLEWARES */
-
-/* //#endregion */
 
 // USERS
 app.get('/users', function (req, res, next) {
@@ -633,7 +639,7 @@ app.get('/add_reparation', function (req, res, next) {
                 clients: results[0],
                 technics: results[1],
                 devices: results[2]
-            });
+            }); 
         });     
     });
 });
@@ -647,7 +653,7 @@ app.post('/add_reparation', function (req, res, next) {
             && formData.device_id != 0 
             && formData.device_type_id != 0
             && formData.breakdowns != []
-            ){
+            ){req.session.u
             req.body.created_by_id = req.session.userid;
             var objBreakdowns = req.body.breakdowns;
             var strBreakdowns = '';
@@ -664,7 +670,7 @@ app.post('/add_reparation', function (req, res, next) {
                 if (err)
                     res.json(err);
 
-                res.status(200).json({ ok: true, redirect: '/reparations'});
+                res.status(200).json({ ok: true, redirect: '/reparations'}); 
             });  
 
         }else{
@@ -745,6 +751,19 @@ app.get('/get_devices_types_by_id/:id', function (req, res, next) {
     });
 });
 
+app.get('/view_reparation_order/:id', function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT reparations.id, reparations.user_id, reparations.client_id, reparations.reparation_type, reparations.payment_type, reparations.check_price, reparations.reparation_code, reparations.created_at, reparations.stimate_date, reparations.device_model, reparations.comments, reparations.diagnostics, status.name status_name, reparations.breakdowns, clients.name client_name, clients.lastname client_last_name, users.id user_id, users.name tech_name, devices.name device_name, devices.image device_image, devices_types.name device_type_name, manufacturers.name manufacturer_name, manufacturers.logo manufacturer_image FROM clients INNER JOIN reparations ON reparations.client_id = clients.id INNER JOIN users ON reparations.user_id = users.id INNER JOIN devices ON reparations.device_id = devices.id INNER JOIN devices_types ON reparations.device_type_id = devices_types.id INNER JOIN manufacturers ON reparations.manufacturer_id = manufacturers.id INNER JOIN status ON reparations.actual_status_id = status.id WHERE reparations.id = ?', 
+        [req.params.id], (err, results) => {
+            if (err)
+                res.json(err);
+    
+            res.status(200).render('view_reparation_order', {
+                reparation: results
+            });
+        });
+    });
+});
 
 // END REPARATIONS
 // Static Files
