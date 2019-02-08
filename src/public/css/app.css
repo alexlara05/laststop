@@ -1,0 +1,42 @@
+.table-responsive{
+    border-top: 1px solid #d8d5d5;
+    padding-top: 15px;
+  }
+  .top-acc{
+    padding: 15px 0;
+  }
+  .chosen-container-single .chosen-single {
+  padding: 5px 8px !important;
+  height: 36px !important;
+  border-radius: 0 !important;
+}
+.chosen-container-single .chosen-single div b {
+  background: url(https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen-sprite.png) no-repeat 0 7px !important;
+}
+.chosen-choices{
+height: 36px !important;
+}
+.chosen-container-multi .chosen-choices li.search-field input[type=text]{
+margin: 5px 0 !important;
+}
+.status{
+color: #fff;
+padding: 0 5px;
+white-space: nowrap;
+padding: 0 7px 2px 7px;
+}
+.status-1{
+background: #65696d
+}
+.status-2{
+background: #039a5b
+}
+.status-3{
+  background: #9a7203
+  }
+.status-4{
+background: red
+}
+.status-5{
+background: #2780e3
+}

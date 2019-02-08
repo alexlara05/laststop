@@ -7,6 +7,7 @@
 	<!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://bootswatch.com/4/cosmo/bootstrap.min.css">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/app.css">
 <style>
 .gray-sts{
     color: #9e9e9e;
@@ -17,16 +18,19 @@
 
     <div class="row">
         <div class="col-md-12">
-                <img src="https://axaserviz.com/app/static/media/logo_last_stop_appliances_color.d0a865ce.png" width="155">
-                <h2>Orden de reparación</h2>
-                <p class="mb-1"># <%= reparation[0].id %>-<%= reparation[0].reparation_code %></p>
-                <p class="mb-1 gray-sts">Fecha de creación : 
-                    <i class="fa fa-calendar" aria-hidden="true"></i>
-                    <%= reparation[0].created_at.toISOString().split('T')[0] %>
-                </p>
-                <p class="pb-0 gray-sts">Fecha estimada de visita : 
-                    <i class="fa fa-calendar" aria-hidden="true"></i> <%= reparation[0].stimate_date.toISOString().split('T')[0] %>
-                </p>
+            <img src="https://axaserviz.com/app/static/media/logo_last_stop_appliances_color.d0a865ce.png" width="155">
+            <h2>Orden de reparación</h2>
+            <p class="mb-1" style="font-size: 24px;">#
+                <%= reparation[0].id %>-<%= reparation[0].reparation_code %>
+            </p>
+            <p class="mb-1 gray-sts">Fecha de creación :
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                <%= reparation[0].created_at.toISOString().split('T')[0] %>
+            </p>
+            <p class="pb-0 gray-sts">Fecha estimada de visita :
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                <%= reparation[0].stimate_date.toISOString().split('T')[0] %>
+            </p>
         </div>
     </div>
     <hr>
@@ -34,16 +38,20 @@
         <div class="col-md-12 text-center">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h4>Cliente : <a href="#"><i class="fa fa-user-circle" aria-hidden="true"></i> HECTOR LARA</a></h4>
+                    <h4>Cliente : <a href="http://maps.google.com/?q=<%= reparation[0].client_addres %>+<%= reparation[0].client_city %>+<%= reparation[0].state_id %>" class="text-uppercase"><i class="fa fa-user-circle" aria-hidden="true"></i> <%= reparation[0].client_name %> <%= reparation[0].client_last_name %></a></h4>
                 </div>
                 <div class="panel-body">
-                    <p class="mb-1">
-                        <i class="fa fa-map-marker" aria-hidden="true"></i>
-                        10 Southard street, Paterson, New jersey <br>
+                    <p class="mb-1 text-uppercase">
+                        <a href="http://maps.google.com/?q=<%= reparation[0].client_addres %>+<%= reparation[0].client_city %>+<%= reparation[0].state_id %>" target="_blank">
+                            <i class="fa fa-map-marker" aria-hidden="true"></i>
+                            <%= reparation[0].client_addres %>, <%= reparation[0].client_city %>, <%= reparation[0].state_fullname %> <br>
+                        </a>
                     </p>
                     <p style="margin: 0;">
-                        <i class="fa fa-phone-square" aria-hidden="true"></i>
-                        9736802390 <br>
+                        <a href="tel:<%= reparation[0].phone %>">
+                            <i class="fa fa-phone-square" aria-hidden="true"></i>
+                            <%= reparation[0].phone %>
+                        </a> <br>
                     </p>
                 </div>
             </div>
@@ -57,8 +65,8 @@
                     <p class="mb-1 gray-sts">
                         Estado actual <br>
                     </p>
-                    <p class="alert" style="border-radius: .25rem; color: #FFF;background: #9e9e9e;">
-                        <strong>Esperando piezas</strong> <br>
+                    <p class="alert text-uppercase status-<%= reparation[0].status_id %>" style="border-radius: .25rem; color: #FFF;">
+                        <strong><%= reparation[0].status_name %></strong> <br>
                     </p>
                 </div>
             </div>
@@ -73,8 +81,8 @@
                     <p class="mb-1 gray-sts pull-left">
                         Técnico asignado
                     </p>
-                    <p class="mb-1 pull-right">
-                        <strong><a href="#"><i class="fa fa-user-circle" aria-hidden="true"></i> HECTOR LARA</a></strong>
+                    <p class="mb-1 pull-right text-uppercase">
+                        <strong><a href="#"><i class="fa fa-user-circle" aria-hidden="true"></i> <%= reparation[0].tech_name %></a></strong>
                     </p>
                 </div>
             </div>
@@ -104,7 +112,7 @@
                         Forma de pago
                     </p>
                     <p class="mb-1 pull-right">
-                        Pago
+                        <%= reparation[0].payment_type %>
                     </p>
                 </div>
             </div>
@@ -119,7 +127,7 @@
                         <strong>Costo de chequeo</strong>
                     </p>
                     <p class="mb-1 pull-right">
-                        <strong>$30.00</strong>
+                        <strong>$<%= reparation[0].check_price %></strong>
                     </p>
                 </div>
             </div>
@@ -134,10 +142,10 @@
                         Electrodomestico a reparar
                     </p>
                     <p class="mb-1 pull-center">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0tCvLrj6na93dz1uFazGDzyrRNZROJyHUdZU0ekXjY12jO2FW" alt="">
+                        <img src="<%= reparation[0].device_image %>" alt="Device" style="width: 50%;">
                     </p>
-                    <p class="mb-1 pull-center">
-                        <strong>NEVERA</strong>
+                    <p class="mb-1 pull-center text-uppercase">
+                        <strong><%= reparation[0].device_name %></strong>
                     </p>
                 </div>
             </div>
@@ -152,7 +160,7 @@
                             Tipo de electrodomestico
                         </p>
                         <p class="mb-1 pull-right">
-                            Dos puertas
+                            <%= reparation[0].device_type_name %>
                         </p>
                     </div>
                 </div>
@@ -167,7 +175,7 @@
                             Marca
                         </p>
                         <p class="mb-1 pull-right">
-                            Samsung
+                            <img src="<%= reparation[0].manufacturer_image %>" style="width: 80px;"> <%= reparation[0].manufacturer_name %> 
                         </p>
                     </div>
                 </div>
@@ -182,7 +190,7 @@
                             Modelo
                         </p>
                         <p class="mb-1 pull-right">
-                            SD-M24451
+                            <%= reparation[0].device_model %> 
                         </p>
                     </div>
                 </div>
@@ -205,10 +213,12 @@
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <ul class="list-group">
-                            <li class="list-group-item" style="background: #9e9e9e; color: #fff;">Cras justo odio</li>
-                            <li class="list-group-item" style="background: #9e9e9e; color: #fff;">Dapibus ac facilisis in</li>
-                            <li class="list-group-item" style="background: #9e9e9e; color: #fff;">Morbi leo risus</li>
-                            <li class="list-group-item" style="background: #9e9e9e; color: #fff;">Porta ac consectetur ac</li>
+                            <% for(var i = 0; i < breakdowns.length; i++) { %>
+                                <% var breakdownDbArray = reparation[0].breakdowns.split(','); %>
+                                <% if(breakdownDbArray.includes(breakdowns[i].id.toString())){ %>
+                                    <li class="list-group-item text-uppercase" style="background: #9e9e9e; color: #fff;"> <%= breakdowns[i].name %></li>
+                                <%} %>                                
+                            <% } %>
                         </ul>
                     </div>
                 </div>
@@ -231,7 +241,7 @@
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <ul class="list-group">
-                            <li class="list-group-item">POR FAVOR TOCAR ANTES DE ENTRA. HAY PERRO </li>
+                            <li class="list-group-item text-uppercase"><%= reparation[0].comments %></li>
                         </ul>
                     </div>
                 </div>
@@ -254,11 +264,10 @@
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <ul class="list-group">
-                            <li class="list-group-item">ESTE EQUIPO TIENE LA MAYOR PARTE DE SUS PIEZAS DEFECTUOSAS.</li>
+                            <li class="list-group-item text-uppercase"><%= reparation[0].diagnostics %></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <hr>
 </div>

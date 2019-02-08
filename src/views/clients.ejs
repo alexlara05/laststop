@@ -39,7 +39,7 @@
                         <a target="_blank" href="http://maps.google.com/?q=<%= data[i].address %>+<%= data[i].city %>+<%= data[i].statecode %>"><%= data[i].address %>, <%= data[i].city %>, <%= data[i].statecode %></a>
                     </td>
                     <td>
-                        <%= data[i].phone %>
+                        <a href="tel:<%= data[i].phone %>"><%= data[i].phone %></a>
                     </td>
                     <td>
                         <%= data[i].company %>
