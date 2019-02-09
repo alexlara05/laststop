@@ -40,7 +40,7 @@ app.use((req, res, next) => {
     app.locals.userrol = req.session.isadmin; // Creating a Global var for request from view
     res.header("Access-Control-Allow-Origin", "*");
     var queryParamId = req.path.split('/')[2]
-    if (req.path != '/login' && req.method != 'POST') {
+    if (req.path != '/login' && req.method != 'POST' && req.path != '/view_reparation_order/'+queryParamId && req.path != '/public/css/app.css') {
         if (!req.session.email && !req.session.userid && !req.session.name && !req.session.isadmin) {
             // VERIFY SESSION VARIABLES
             res.status(400).redirect('/login');
@@ -594,10 +594,11 @@ app.post('/add_client', function (req, res, next) {
 
 app.post('/delete_client/:id', function (req, res, next) {
     req.getConnection((err, conn) => {
-        conn.query('DELETE FROM clients WHERE id = ?', [req.params.id], (err, users) => {
+        conn.query('SELECT * FROM reparations WHERE client_id = ?; DELETE FROM clients WHERE id = ?', [req.params.id, req.params.id], (err, results) => {
             if (err)
                 res.json(err);
 
+                var hola = results;
             res.status(200).json({ message: 'Cliente eliminado' });
         });
     });
@@ -651,7 +652,7 @@ app.get('/reparations', function (req, res, next) {
 
 app.get('/add_reparation', function (req, res, next) {
     req.getConnection((err, conn) => {
-        conn.query('SELECT id, name, lastname FROM clients; SELECT id, name FROM users WHERE isadmin = 0; SELECT id, name FROM devices', (err, results) => {
+        conn.query('SELECT id, name, lastname FROM clients; SELECT id, name, phone FROM users WHERE isadmin = 0; SELECT id, name FROM devices', (err, results) => {
             if (err)
                 res.json(err);
 
@@ -690,7 +691,7 @@ app.post('/add_reparation', function (req, res, next) {
                 if (err)
                     res.json(err);
 
-                res.status(200).json({ ok: true, redirect: '/reparations'}); 
+                res.status(200).json({ ok: true, oid: results.insertId}); 
             });  
 
         }else{
@@ -825,7 +826,7 @@ app.post("/send_sms", function (req, res, next) {
 
     const from = "19136600451";
     const to = req.body.phone;
-    const text = "Estimado "+req.body.tech + ' se le ha asignado la orden de reparación, #'+req.body.id + ' la cual fue creada en fecha '+ req.body.created_at+ ' ';
+    const text = "Estimado "+req.body.tech + ' se le ha asignado la orden de reparación, #'+req.body.id + ' https://c091d669.ngrok.io/view_reparation_order/'+req.body.id;
 
     nexmo.message.sendSms(from, '1'+to, text);
 });

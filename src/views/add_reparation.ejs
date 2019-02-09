@@ -57,7 +57,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id=""><i class="fa fa-calculator"></i></span>
                         </div>
-                        <input type="number" step="any" class="form-control" value="0.00" name="check_price" id="txtCheck_price" placeholder="Costo del chequeo">
+                        <input type="number" step="any" class="form-control" value="30.00" name="check_price" id="txtCheck_price" placeholder="Costo del chequeo">
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                     <select id="cboTechnics" name="user_id" style="width: calc(100% - 37px);">
                         <option style="display: none" value="0">Seleccione</option>
                         <% for(var i = 0; i < technics.length; i++) { %>
-                        <option value="<%= technics[i].id %>">
+                        <option value="<%= technics[i].id %>" phone="<%= technics[i].phone %>">
                             <%= technics[i].name %>
                         </option>
                         <% } %>
@@ -368,7 +368,9 @@
             data: form.serialize(), // serializes the form's elements.
             success: function (response) {
                 if(response.ok){
-                    window.location.href = response.redirect;
+                    //window.location.href = response.redirect;
+                    var tech_select = $('#cboTechnics :selected');
+                        window.location.href = '/send_sms?tn='+tech_select.text().trim()+'&tp='+tech_select.attr('phone')+'&oid='+response.oid+'&ocd='+new Date().toJSON().slice(0,10).replace(/-/g,'/');
                 }else{
                     console.log(response)
                 }
