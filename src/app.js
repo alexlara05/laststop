@@ -8,6 +8,12 @@ const express = require('express'),
     sha256 = require('sha256');
 const app = express();
 
+const Nexmo = require('nexmo');
+const nexmo = new Nexmo({
+  apiKey: '7ae9e198',
+  apiSecret: 'iOcUthYroSOG23NO'
+});
+
 // Settings
 app.set('port', process.env.PORT || 3000);
 app.set('view engine', 'ejs');
@@ -33,12 +39,13 @@ app.use(mySqlConnection(mysql, {
 app.use((req, res, next) => {
     app.locals.userrol = req.session.isadmin; // Creating a Global var for request from view
     res.header("Access-Control-Allow-Origin", "*");
+    var queryParamId = req.path.split('/')[2]
     if (req.path != '/login' && req.method != 'POST') {
         if (!req.session.email && !req.session.userid && !req.session.name && !req.session.isadmin) {
             // VERIFY SESSION VARIABLES
             res.status(400).redirect('/login');
 
-        } else if (req.path != '/tech_reparations' && req.session.isadmin == 0 && req.path != '/logout') {
+        } else if (req.path != '/tech_reparations' && req.session.isadmin == 0 && req.path != '/logout' && req.path != '/view_reparation_order/'+queryParamId) {
             res.render('accessdenied');
             return;
         }
@@ -58,8 +65,21 @@ app.use(function(err, req, res, next) {
 
 // Routes
 app.get('/', function (req, res, next) {
-    res.render('home');
-    next()
+    req.getConnection((err, conn) => {
+        conn.query('SELECT id, name, email, phone, created_at, isadmin FROM users', (err, users) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).render('home', { data: users, isadmin: req.session.isadmin });
+        });
+    });
+
+   // const from = '19136600451'
+//const to = '17864900818'
+//const text = 'Hello laststop app'
+
+//nexmo.message.sendSms(from, to, text)
+
 });
 
 app.get('/login', function (req, res, next) {
@@ -681,11 +701,21 @@ app.post('/add_reparation', function (req, res, next) {
 
 app.get('/edit_reparation/:id', function (req, res, next) {
     req.getConnection((err, conn) => {
-        conn.query('SELECT * FROM reparations WHERE id = ?; SELECT id, name, lastname FROM clients; SELECT id, name FROM users WHERE isadmin = 0; SELECT * FROM devices; SELECT * FROM breakdowns; SELECT * FROM devices_types;SELECT * FROM manufacturers; SELECT * FROM status;', 
+        conn.query('SELECT * FROM reparations WHERE id = ?; SELECT id, name, lastname, phone FROM clients; SELECT id, name, phone FROM users WHERE isadmin = 0; SELECT * FROM devices; SELECT * FROM breakdowns; SELECT * FROM devices_types;SELECT * FROM manufacturers; SELECT * FROM status;', 
         [req.params.id], (err, results) => {
             if (err)
                 res.json(err);
-    
+
+            techArray = results[2]; 
+
+            for (let i = 0; i < techArray.length; i++) {
+                const tech = techArray[i];
+                const tech_rep_id = results[0][0].user_id;
+                if(tech.id == tech_rep_id){
+                    app.locals.reparation_tech = results[2][i];
+                }
+            }
+
             res.status(200).render('edit_reparation', {
                 reparation: results[0],
                 clients: results[1],
@@ -701,6 +731,7 @@ app.get('/edit_reparation/:id', function (req, res, next) {
 });
 
 app.post('/edit_reparation/:id', function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
     req.getConnection((err, conn) => {
         var formData = req.body;
         if(formData.reparation_type != 0 
@@ -712,6 +743,8 @@ app.post('/edit_reparation/:id', function (req, res, next) {
             ){
             var objBreakdowns = req.body.breakdowns;
             var strBreakdowns = '';
+
+            var reparation_tech = app.locals.reparation_tech;
 
             if(formData.payment_type == 'Garantia') req.body.check_price = 0.00
 
@@ -767,6 +800,36 @@ app.get('/view_reparation_order/:id', function (req, res, next) {
 });
 
 // END REPARATIONS
+
+// SEND SMS
+app.get("/send_sms", function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query('SELECT * FROM users limit 1', (err, users) => {
+            if (err)
+                res.json(err);
+
+            res.status(200).render('send_sms');
+        });
+    });
+});
+
+app.post("/send_sms", function (req, res, next) {
+    req.getConnection((err, conn) => {
+        conn.query("SELECT id, name, email, phone, created_at, isadmin FROM users", (err, users) => {
+                if (err) res.json(err);
+ 
+                res.status(200).json({ data: req.body }); 
+            }
+        );
+    });
+
+    const from = "19136600451";
+    const to = req.body.phone;
+    const text = "Estimado "+req.body.tech + ' se le ha asignado la orden de reparación, #'+req.body.id + ' la cual fue creada en fecha '+ req.body.created_at+ ' ';
+
+    nexmo.message.sendSms(from, '1'+to, text);
+});
+
 // Static Files
 app.use('/public', express.static(__dirname + '/public'));
 app.listen(3000, () => {

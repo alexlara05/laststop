@@ -95,7 +95,13 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label for="txtPhone">Teléfono</label>
-                        <input type="number" class="form-control" id="txtPhone" placeholder="Teléfono">
+                        <input type="number" class="form-control" id="txtPhone" placeholder="Teléfono" name="phone"
+                        onkeypress="return isNumeric(event)"
+                        oninput="maxLengthCheck(this)"
+                        type = "number"
+                        maxlength = "10"
+                        min = "1"
+                        max = "9">
                     </div>
                 </div>
                 <div class="form-row">
@@ -249,4 +255,21 @@
         var txtEmail = $('#txtEmail').val('');
         var txtPassword = $('#txtPassword').val('');
     });
+
+        function maxLengthCheck(object) {
+            if (object.value.length > object.maxLength)
+                object.value = object.value.slice(0, object.maxLength)
+        }
+
+        function isNumeric(evt) {
+            var theEvent = evt || window.event;
+            var key = theEvent.keyCode || theEvent.which;
+            key = String.fromCharCode(key);
+            var regex = /[0-9]|\./;
+            if (!regex.test(key)) {
+                theEvent.returnValue = false;
+                if (theEvent.preventDefault) theEvent.preventDefault();
+            }
+        }
+
 </script>

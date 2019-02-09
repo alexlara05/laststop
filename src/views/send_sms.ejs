@@ -1,0 +1,42 @@
+<% include partials/_header %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.min.css">
+
+<% include partials/_footer %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var option = confirm("ENVIAR MENSAJE DE TEXTO AL TECNICO ASIGNADO?");
+        if (option) {
+            $.ajax({
+                type: "POST",
+                url: '/send_sms',
+                data: {
+                    tech: getParameterByName('tn'),
+                    phone: getParameterByName('tp'),
+                    id: getParameterByName('oid'),
+                    created_at: getParameterByName('ocd')
+                }, // serializes the form's elements.
+                success: function (response) {
+                    console.log(response);
+                    window.location.href = '/reparations';
+                },
+                error: function (err) {
+                    alert('Ocurrió un error por favor intente de nuevo');
+                    console.log(err);
+                }
+            });
+        } else {
+            console.log("Has clickado cancelar");
+        }
+    });
+
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+</script>
