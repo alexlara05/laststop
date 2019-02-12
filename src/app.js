@@ -6,6 +6,7 @@ const express = require('express'),
     session = require('express-session'),
     bodyParser = require('body-parser'),
     sha256 = require('sha256');
+
 const app = express();
 
 const Nexmo = require('nexmo');
@@ -27,11 +28,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Middlewares
 app.use(morgan('dev')); // watching file changes
 app.use(mySqlConnection(mysql, {
-    host: 'localhost',
-    user: 'root',
-    password: '123456',
+    host: 'us-cdbr-iron-east-03.cleardb.net',
+    user: 'be09fc7f79c145',
+    password: 'a0b229e9',
     port: 3306,
-    database: 'laststop',
+    database: 'heroku_e6473225eb891d2',
     multipleStatements: true
 }, 'single'));
 
@@ -826,7 +827,7 @@ app.post("/send_sms", function (req, res, next) {
 
     const from = "19136600451";
     const to = req.body.phone;
-    const text = "Estimado "+req.body.tech + ' se le ha asignado la orden de reparación, #'+req.body.id + ' https://c091d669.ngrok.io/view_reparation_order/'+req.body.id;
+    const text = "Estimado "+req.body.tech + ' se le ha asignado la orden de reparación, #'+req.body.id + ' https://80aa6c7e.ngrok.io/view_reparation_order/'+req.body.id;
 
     nexmo.message.sendSms(from, '1'+to, text);
 });
@@ -834,7 +835,7 @@ app.post("/send_sms", function (req, res, next) {
 // Static Files
 app.use('/public', express.static(__dirname + '/public'));
 app.listen(3000, () => {
-    console.log('running server');
+    console.log('running LastStop server');
 });
 
 // Some functions

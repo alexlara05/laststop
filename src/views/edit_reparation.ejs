@@ -40,7 +40,7 @@
                 </div>
             </div>
             <div class="col-md-2">
-                <label for="txtState">Forma de pago</label>
+                <label for="txtState">Tipo de servicio</label>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id=""><i class="fa fa-usd"></i></span>
@@ -281,7 +281,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
                                     </div>
-                                    <input type="text" class="form-control" id="txtPhone" placeholder="Teléfono">
+                                    <input type="text" class="form-control" id="txtPhone" placeholder="Teléfono" onkeypress="return isNumeric(event)" oninput="maxLengthCheck(this)" maxlength="10" min="1" max="9">
                                 </div>
                             </div>
                         </div>
