@@ -67,11 +67,15 @@ app.use(function(err, req, res, next) {
 // Routes
 app.get('/', function (req, res, next) {
     req.getConnection((err, conn) => {
-        conn.query('SELECT id, name, email, phone, created_at, isadmin FROM users', (err, users) => {
+        conn.query('SELECT COUNT(*) as repcount FROM reparations; SELECT COUNT(*) as clientscount FROM clients; SELECT COUNT(*) as userscount FROM users WHERE isadmin = 0;', (err, results) => {
             if (err)
                 res.json(err);
 
-            res.status(200).render('home', { data: users, isadmin: req.session.isadmin });
+            res.status(200).render('home', { 
+                reparations: results[0],
+                clients: results[1],
+                tech: results[2]
+            });
         });
     });
 

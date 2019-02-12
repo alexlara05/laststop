@@ -147,7 +147,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
+                            <div class="form-row mb-2">
+                                <label for="txtzipcode">Zip code</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-home"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtzipcode" placeholder="Edificio numero">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="form-row mb-2">
                                 <label for="txtApt">Apt/Unit</label>
                                 <div class="input-group mb-3">
@@ -225,6 +236,7 @@
             var txtAddress = $('#txtAddress').val().trim();
             var txtCity = $('#txtCity').val().trim();
             var txtApt = $('#txtApt').val().trim();
+            var txtzipcode = $('#txtzipcode').val().trim();
             var txtComments = $('#txtComments').val().trim();
             var cboState = $('#states').val();
             var data = {
@@ -236,7 +248,8 @@
                 city: txtCity,
                 comments: txtComments,
                 apt_unit: txtApt,
-                state_id: cboState
+                state_id: cboState,
+                zipcode: txtzipcode
             }
             var mode = $('#mode').val();
             if (txtName == '') {
@@ -357,6 +370,7 @@
                     $('#txtApt').val(response.data[0].apt_unit);
                     $('#txtComments').val(response.data[0].comments);
                     $('#states').val(response.data[0].state_id);
+                    $('#txtzipcode').val(response.data[0].zipcode);
                 },
                 error: function (err) {
                     alert('Ocurrió un error por favor intente de nuevo');
