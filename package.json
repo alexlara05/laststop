@@ -4,7 +4,7 @@
   "description": "Selling & Repair System",
   "main": "app.js",
   "scripts": {
-    "start": "NODE_ENV=production node src/app.js",
+    "start": "node src/app.js",
     "dev": "nodemon src/app.js"
   },
   "keywords": [],
