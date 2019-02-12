@@ -16,7 +16,7 @@ const nexmo = new Nexmo({
 });
 
 // Settings
-app.set('port', process.env.PORT || 8080);
+app.set('port', process.env.PORT || 3000);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(session({ secret: '12dfdfdfsd.aj.l&&3456', resave: true, saveUninitialized: true }));
@@ -834,7 +834,7 @@ app.post("/send_sms", function (req, res, next) {
 
 // Static Files
 app.use('/public', express.static(__dirname + '/public'));
-app.listen(8080, '0.0.0.0', () => {
+app.listen(3000, '0.0.0.0', () => {
     console.log('running LastStop server');
 });
 
