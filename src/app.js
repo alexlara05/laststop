@@ -20,7 +20,7 @@ app.set('port', process.env.PORT || 3000);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(session({ secret: '12dfdfdfsd.aj.l&&3456', resave: true, saveUninitialized: true }));
-
+process.env.NODE_ENV = 'production';
 // register the bodyParser middleware for processing forms
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
