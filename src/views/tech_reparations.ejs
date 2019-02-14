@@ -23,34 +23,36 @@
                 </tr>
             </thead>
             <tbody>
-                <% for(var i = 0; i < data.length; i++) { %>
+                <% for(var i = 0; i < reparations.length; i++) { %>
                 <tr>
+                    <td align="center" style="vertical-align: inherit;" diagnostic="<%= reparations[i].diagnostics %>">
+                        <%= reparations[i].id %>
+                    </td>
+                    <td style="vertical-align: inherit;">
+                        <%= reparations[i].reparation_code %>
+                    </td>
+                    <td style="vertical-align: inherit;">
+                        <%= reparations[i].device_name %>
+                    </td>
+                    <td style="vertical-align: inherit;">
+                        <%= reparations[i].clientname %> <%= reparations[i].lastname %>
+                    </td>
+                    <td style="vertical-align: inherit;">
+                        <a target="_blank" href="http://maps.google.com/?q=<%= reparations[i].address %>+<%= reparations[i].city %>+<%= reparations[i].stateid %>+<%= reparations[i].zipcode %>"><%= reparations[i].address %>, <%= reparations[i].city %>, <%= reparations[i].stateid %>, <%= reparations[i].zipcode %></a>
+                    </td>
+                    <td style="vertical-align: inherit;">
+                        <a href="tel:<%= reparations[i].phone %>"><%= reparations[i].phone %></a>
+                    </td>
+                    <td style="vertical-align: inherit;"><%= reparations[i].created_at.toLocaleString('en').split(",")[0] %></td>
+                    <td style="vertical-align: inherit;"><%= reparations[i].stimate_date.toLocaleString('en').split(",")[0] %></td>
+                    <td align="center" style="vertical-align: inherit;" status="<%= reparations[i].actual_status_id %>">
+                        <span class="status status-<%= reparations[i].actual_status_id %>"><%= reparations[i].actual_status %></span>
+                    </td>
                     <td align="center" style="vertical-align: inherit;">
-                        <%= data[i].id %>
-                    </td>
-                    <td style="vertical-align: inherit;">
-                        <%= data[i].reparation_code %>
-                    </td>
-                    <td style="vertical-align: inherit;">
-                        <%= data[i].device_name %>
-                    </td>
-                    <td style="vertical-align: inherit;">
-                        <%= data[i].clientname %> <%= data[i].lastname %>
-                    </td>
-                    <td style="vertical-align: inherit;">
-                        <a target="_blank" href="http://maps.google.com/?q=<%= data[i].address %>+<%= data[i].city %>+<%= data[i].stateid %>"><%= data[i].address %>, <%= data[i].city %>, <%= data[i].stateid %></a>
-                    </td>
-                    <td style="vertical-align: inherit;">
-                        <a href="tel:<%= data[i].phone %>"><%= data[i].phone %></a>
-                    </td>
-                    <td style="vertical-align: inherit;"><%= data[i].created_at.toLocaleString('en').split(",")[0] %></td>
-                    <td style="vertical-align: inherit;"><%= data[i].stimate_date.toLocaleString('en').split(",")[0] %></td>
-                    <td align="center" style="vertical-align: inherit;">
-                        <span class="status status-<%= data[i].actual_status_id %>"><%= data[i].actual_status %></span>
-                    </td>
-                    <td align="center" style="vertical-align: inherit;">
-                        <a href="/edit_reparation/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
+                        <a href="/edit_reparation/<%= reparations[i].id %>" uid="<%= reparations[i].id %>" class="btn btn-primary btn-edit"><i
                         class="fa fa-pencil" aria-hidden="true"></i></a>
+                        <a href="/view_reparation_order/<%= reparations[i].id %>" class="btn btn-info btn-view"><i
+                            class="fa fa-info-circle" aria-hidden="true"></i></a>
                     </td>
                 </tr>
 
@@ -61,114 +63,46 @@
     </div>
 
 </div>
-<input type="hidden" id="mode">
-<input type="hidden" id="clientid">
+<input type="hidden" id="id">
 <!-- Modal -->
-<div class="modal fade" id="clientModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="clientModal" aria-hidden="true">
+<div class="modal fade" id="reparationModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="clientModal" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Clientes</h5>
+                <h5 class="modal-title">Editar reparación</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="col-md-12">
-                    <div class="form-row mb-3">
-                        <label for="txtName">Información del cliente</label>
-                        <div class="input-group">
+                <div class="col-md-6">
+                    <div class="form-row mb-2">
+                        <label for="txtState">Estado</label>
+                        <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id=""> <i class="fa fa-user"></i></span>
+                                <span class="input-group-text" id=""><i class="fa fa-map"></i></span>
                             </div>
-                            <input type="text" class="form-control" id="txtName" placeholder="Nombre">
-                            <input type="text" class="form-control" id="txtLastName" placeholder="Apellido">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-12">
-                    <div class="form-row">
-                        <div class="col-md-6">
-                            <div class="form-row mb-2">
-                                <label for="txtName">Compañía</label>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id=""><i class="fa fa-building"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control" id="txtCompany" placeholder="Compañía">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-row mb-2">
-                                <label for="txtPhone">Teléfono</label>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control" id="txtPhone" placeholder="Teléfono">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-row mb-2">
-                                <label for="txtAddress">Dirección</label>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id=""><i class="fa fa-street-view"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control" id="txtAddress" placeholder="Ej: 000 nombre street">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-row mb-2">
-                                <label for="txtCity">Ciudad</label>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id=""><i class="fa fa-map-signs"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control" id="txtCity" placeholder="Nombre de la ciudad">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-row mb-2">
-                                <label for="txtState">Estado</label>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id=""><i class="fa fa-map"></i></span>
-                                    </div>
-                                    <select id="states" style="width: calc(100% - 41px);height: 36px;">
-                                        <option style="display: none" value="0">Seleccione el estado</option>
-                                    <select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-row mb-2">
-                                <label for="txtApt">Apt/Unit</label>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id=""><i class="fa fa-home"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control" id="txtApt" placeholder="Edificio numero">
-                                </div>
-                            </div>
+                            <select id="cboStatus" style="width: calc(100% - 44px);" name="actual_status_id">
+                                <option style="display: none" value="0">Seleccione el estado</option>
+                                <% for(var i = 0; i < status.length; i++) { %>
+                                <option value="<%= status[i].id %>">
+                                    <%= status[i].name %>
+                                </option>
+                                <% } %>
+                            </select>
                         </div>
                     </div>
                 </div>
 
                 <div class="input-field col-lg-12">
                     <div class="form-group">
-                        <label for="txtComments">Comentarios</label> <i class="fa fa-commenting"></i>
-                        <textarea class="form-control" id="txtComments" placeholder="Notas y/o comentarios" rows="3"></textarea>
+                        <label for="txtDiagnostic">Diagnosticos del tecnico</label> <i class="fa fa-exclamation-triangle"></i>
+                        <textarea class="form-control" name="diagnostics" id="txtDiagnostic" placeholder="Comentarios / Diagnostigo del tecnico"
+                            rows="3"></textarea>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <img id="loading" src="/public/images/loading.gif" alt="cargando" style="display: none; width: 100px; height: 36px;">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 <button type="button" class="btn btn-primary btn-save">Guardar cliente</button>
             </div>
@@ -185,8 +119,46 @@
             "columnDefs": [
                 { "width": "5%", "targets": 0 },
                 { "width": "8%", "targets": 7 },
-                { "width": "8%", "targets": 6 }
+                { "width": "8%", "targets": 6 },
+                { "width": "10%", "targets": 9 }
             ]
+        });
+
+        $('.btn-edit').click(function (e) {
+            e.preventDefault();
+            $('#mode').val(2);
+            $('#deviceid').val($(this).attr('uid'));
+            var id = $(this).parent().siblings(':eq(0)').text().trim();
+            var diagnostic = $(this).parent().siblings(':eq(0)').attr('diagnostic');
+            var code = $(this).parent().siblings(':eq(1)').text().trim();
+            var name = $(this).parent().siblings(':eq(3)').text().trim();
+            var status = $(this).parent().siblings(':eq(8)').attr("status").trim();
+            $('.modal-title').text('Editar reparación # '+ id + '-' + code + ', ' + name);
+            $('#reparationModal').modal();
+            $('#id').val(id);
+            $('#cboStatus').val(status); 
+            $('#txtDiagnostic').val(diagnostic);
+            $('select').trigger("chosen:updated");
+        });
+
+        $('.btn-save').click(function() {
+            $.ajax({
+                'url': '/edit_reparation/'+$('#id').val(),
+                'method': 'POST',
+                'data': {
+                    actual_status_id: $('#cboStatus').val(),
+                    diagnostics: $('#txtDiagnostic').val()
+                },
+                'dataType': 'json',
+                success: function (response) {
+                    $('#reparationModal').modal('hide');
+                        location.reload();
+                    console.log(response);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
         });
     });
 </script>

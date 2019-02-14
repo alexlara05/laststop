@@ -141,13 +141,13 @@ app.post('/login', function (req, res, next) {
 });
 
 app.get('/tech_reparations', function (req, res, next) {
-    let  sql = 'SELECT reparations.id, reparations.created_at, reparations.reparation_type, reparations.payment_type, reparations.reparation_code, reparations.actual_status_id, reparations.stimate_date, clients.name clientname, clients.lastname, clients.phone, clients.address, clients.city, clients.apt_unit, states.stateid, devices.name device_name, status.name actual_status FROM reparations INNER JOIN clients ON clients.id = reparations.client_id INNER JOIN states ON states.STATEID = clients.state_id INNER JOIN status ON status.id = reparations.actual_status_id INNER JOIN devices ON devices.id = reparations.device_id WHERE user_id = ?;';
+    let  sql = 'SELECT reparations.id, reparations.created_at, reparations.reparation_type, reparations.diagnostics, reparations.payment_type, reparations.reparation_code, reparations.actual_status_id, reparations.stimate_date, clients.name clientname, clients.lastname, clients.phone, clients.address, clients.zipcode, clients.city, clients.apt_unit, states.stateid, devices.name device_name, status.name actual_status FROM reparations INNER JOIN clients ON clients.id = reparations.client_id INNER JOIN states ON states.STATEID = clients.state_id INNER JOIN status ON status.id = reparations.actual_status_id INNER JOIN devices ON devices.id = reparations.device_id WHERE user_id = ?; SELECT * FROM status;';
     req.getConnection((err, conn) => {
-        conn.query(sql, [req.session.userid], (err, reparations) => {
+        conn.query(sql, [req.session.userid], (err, results) => {
             if (err)
                 res.json(err); 
 
-            res.status(200).render('tech_reparations', { data: reparations });
+            res.status(200).render('tech_reparations', { reparations: results[0], status: results[1] });
         });
     });
 });
@@ -760,11 +760,14 @@ app.post('/edit_reparation/:id', function (req, res, next) {
 
             if(formData.payment_type == 'Garantia') req.body.check_price = 0.00
 
-            for (let i = 0; i < objBreakdowns.length; i++) {
-                const element = objBreakdowns[i];
-                strBreakdowns += element + (i + 1 < objBreakdowns.length ? ',' : '');
-                req.body.breakdowns = strBreakdowns;
+            if(objBreakdowns){
+                for (let i = 0; i < objBreakdowns.length; i++) {
+                    const element = objBreakdowns[i];
+                    strBreakdowns += element + (i + 1 < objBreakdowns.length ? ',' : '');
+                    req.body.breakdowns = strBreakdowns;
+                }
             }
+            
 
             conn.query('UPDATE reparations set ? WHERE id = ?', [req.body, req.params.id], (err, results) => {
                 if (err)
