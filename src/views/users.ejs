@@ -149,7 +149,7 @@
 
         $('.btn-save').click(function () {
             var loader = $('#loading');
-            var txtName = $('#txtName').val().trim();
+            var txtName = $('#txtName').val().toUpperCase().trim();
             var txtPhone = $('#txtPhone').val().trim();
             var txtEmail = $('#txtEmail').val().trim();
             var txtPassword = $('#txtPassword').val();

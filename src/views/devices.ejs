@@ -101,7 +101,7 @@
 
         $('.btn-save').click(function () {
             var loader = $('#loading');
-            var txtName = $('#txtName').val().trim();
+            var txtName = $('#txtName').val().toUpperCase().trim();
             var txtImage = $('#txtImage').val().trim();
 
             var data = {

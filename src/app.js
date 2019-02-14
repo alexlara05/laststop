@@ -28,17 +28,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Middlewares
 app.use(morgan('dev')); // watching file changes
 app.use(mySqlConnection(mysql, {
-    host: 'us-cdbr-iron-east-03.cleardb.net',
-    user: 'be09fc7f79c145',
-    password: 'a0b229e9',
+    host: 'localhost',
+    user: 'root',
+    password: '123456',
     port: 3306,
-    database: 'heroku_e6473225eb891d2',
+    database: 'laststop',
     multipleStatements: true
 }, 'single'));
 
 // Middlewares - watch User session
 app.use((req, res, next) => {
     app.locals.userrol = req.session.isadmin; // Creating a Global var for request from view
+    app.locals.username = req.session.name;
     res.header("Access-Control-Allow-Origin", "*");
     var queryParamId = req.path.split('/')[2]
     if (req.path != '/login' && req.method != 'POST' && req.path != '/view_reparation_order/'+queryParamId && req.path != '/public/css/app.css') {
@@ -65,7 +66,7 @@ app.use(function(err, req, res, next) {
 });
 
 // Routes
-app.get('/', function (req, res, next) {
+app.get('/', function (req, res, next) { // CAMBIAR / POR /index.php EN PRODUCCION SI EL SERVIDOR CORRE APACHE Y EXPRESS AL MISMO TIEMPO
     req.getConnection((err, conn) => {
         conn.query('SELECT COUNT(*) as repcount FROM reparations; SELECT COUNT(*) as clientscount FROM clients; SELECT COUNT(*) as userscount FROM users WHERE isadmin = 0;', (err, results) => {
             if (err)
@@ -237,7 +238,12 @@ app.get('/edit_user/:id', function (req, res, next) {
 
 app.post('/edit_user/:id', function (req, res, next) {
     var usr = req.body;
-    usr.password = sha256(usr.password);
+    if(usr.password == ""){
+        delete usr.password;
+    }else{
+        usr.password = sha256(usr.password);
+    }
+
     req.getConnection((err, conn) => {
         conn.query('UPDATE users set ? where id = ?', [usr, req.params.id], (err, user) => {
             if (err)
@@ -557,7 +563,7 @@ app.post('/edit_breakdown/:id', function (req, res, next) {
 // End BREAKDOWNS
 // CLIENTS
 app.get('/clients', function (req, res, next) {
-    let  sql = 'SELECT states.STATEID statecode, states.FULLNAME statename, clients.id, clients.name, clients.lastname, clients.phone, clients.company, clients.address, clients.city, clients.zipcode, clients.email, clients.apt_unit, clients.created_at, clients.comments FROM clients ' 
+    let  sql = 'SELECT states.STATEID statecode, states.FULLNAME statename, clients.id, clients.name, clients.lastname, clients.phone, clients.company, clients.zipcode, clients.address, clients.city, clients.zipcode, clients.email, clients.apt_unit, clients.created_at, clients.comments FROM clients ' 
     sql += 'INNER JOIN states ON states.STATEID = clients.state_id;';
     req.getConnection((err, conn) => {
         conn.query(sql, (err, clients) => {
@@ -622,7 +628,7 @@ app.get('/states', function (req, res, next) {
 
 app.get('/edit_client/:id', function (req, res, next) {
     req.getConnection((err, conn) => {
-        conn.query('SELECT id, name, lastname, phone, company, city, address, apt_unit, state_id, comments FROM clients WHERE id = ?', [req.params.id], (err, client) => {
+        conn.query('SELECT id, name, lastname, phone, company, city, zipcode, address, apt_unit, state_id, comments FROM clients WHERE id = ?', [req.params.id], (err, client) => {
             if (err)
                 res.json(err);
     
@@ -644,7 +650,7 @@ app.post('/edit_client/:id', function (req, res, next) {
 // End CLIENTS
 // REPARATIONS
 app.get('/reparations', function (req, res, next) {
-    let  sql = 'SELECT reparations.id, reparations.created_at, reparations.reparation_type, reparations.payment_type, reparations.reparation_code, reparations.actual_status_id, reparations.stimate_date, clients.name clientname, clients.lastname, clients.phone, clients.address, clients.city, clients.apt_unit, states.stateid, devices.name device_name, status.name actual_status FROM reparations INNER JOIN clients ON clients.id = reparations.client_id INNER JOIN states ON states.STATEID = clients.state_id INNER JOIN status ON status.id = reparations.actual_status_id INNER JOIN devices ON devices.id = reparations.device_id;';
+    let  sql = 'SELECT reparations.id, reparations.created_at, reparations.reparation_type, reparations.payment_type, reparations.reparation_code, reparations.actual_status_id, reparations.stimate_date, clients.name clientname, clients.lastname, clients.phone, clients.address, clients.zipcode, clients.city, clients.apt_unit, states.stateid, devices.name device_name, status.name actual_status FROM reparations INNER JOIN clients ON clients.id = reparations.client_id INNER JOIN states ON states.STATEID = clients.state_id INNER JOIN status ON status.id = reparations.actual_status_id INNER JOIN devices ON devices.id = reparations.device_id;';
     req.getConnection((err, conn) => {
         conn.query(sql, (err, reparations) => {
             if (err)
@@ -831,7 +837,7 @@ app.post("/send_sms", function (req, res, next) {
 
     const from = "19136600451";
     const to = req.body.phone;
-    const text = "Estimado "+req.body.tech + ' se le ha asignado la orden de reparación, #'+req.body.id + ' https://80aa6c7e.ngrok.io/view_reparation_order/'+req.body.id;
+    const text = "Estimado "+req.body.tech + ' se le ha asignado la orden de reparación, #'+req.body.id + ' http://laststopapp.com/view_reparation_order/'+req.body.id;
 
     nexmo.message.sendSms(from, '1'+to, text);
 });
@@ -839,7 +845,7 @@ app.post("/send_sms", function (req, res, next) {
 // Static Files
 app.use('/public', express.static(__dirname + '/public'));
 app.listen(process.env.PORT || 3000 ,function(){
-    console.log("LastStop Server up and running on port "+process.env.PORT);
+    console.log("LastStop Server is up and running");
 });
 
 // Some functions

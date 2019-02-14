@@ -320,7 +320,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
+                            <div class="form-row mb-2">
+                                <label for="txtzipcode">Zip code</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-home"></i></span>
+                                    </div>
+                                    <input type="number" class="form-control" id="txtzipcode" placeholder="Codigo postal">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="form-row mb-2">
                                 <label for="txtApt">Apt/Unit</label>
                                 <div class="input-group mb-3">
@@ -483,6 +494,7 @@
         var txtCity = $('#txtCity').val().trim();
         var txtApt = $('#txtApt').val().trim();
         var txtClientComments = $('#txtClientComments').val().trim();
+        var txtzipcode = $('#txtzipcode').val().trim();
         var cboState = $('#states').val();
         var data = {
             name: txtName,
@@ -493,7 +505,8 @@
             city: txtCity,
             comments: txtClientComments,
             apt_unit: txtApt,
-            state_id: cboState
+            state_id: cboState,
+            zipcode: txtzipcode
         }
         var mode = $('#mode').val();
         if (txtName == '') {
