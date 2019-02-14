@@ -11,8 +11,8 @@ const app = express();
 
 const Nexmo = require('nexmo');
 const nexmo = new Nexmo({
-  apiKey: '7ae9e198',
-  apiSecret: 'iOcUthYroSOG23NO'
+  apiKey: '4a377877',
+  apiSecret: 'IExjQ4GKwXhqt4mj'
 });
 
 // Settings
@@ -838,9 +838,9 @@ app.post("/send_sms", function (req, res, next) {
         );
     });
 
-    const from = "19136600451";
+    const from = "12064664231";
     const to = req.body.phone;
-    const text = "Estimado "+req.body.tech + ' se le ha asignado la orden de reparación, #'+req.body.id + ' http://laststopapp.com/view_reparation_order/'+req.body.id;
+    const text = "Estimado "+req.body.tech + ' se le ha asignado la orden de reparación, #'+req.body.id + ' click al link para ver detalles http://laststopapp.com/view_reparation_order/'+req.body.id;
 
     nexmo.message.sendSms(from, '1'+to, text);
 });
