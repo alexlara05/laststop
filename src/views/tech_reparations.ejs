@@ -1,6 +1,12 @@
 <% include partials/_header %>
+<% include functions %>
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
+<style>
+.chosen-container {
+    width: 100% !important;
+}
+</style>
 <div class="container">
     <div class="top-acc">
         <h3 class="pull-left">Tabla de reparaciones <a href="#" style="text-transform: capitalize;"><i class="fa fa-user-md" aria-hidden="true"></i> <%= username %></a></h3>
@@ -25,14 +31,14 @@
             <tbody>
                 <% for(var i = 0; i < reparations.length; i++) { %>
                 <tr>
-                    <td align="center" style="vertical-align: inherit;" diagnostic="<%= reparations[i].diagnostics %>">
+                    <td align="center" style="vertical-align: inherit;" diagnostic="<%= reparations[i].diagnostics %>" total_paid="<%= reparations[i].total_paid %>" device_id="<%= reparations[i].device_id %>" rep_breakdowns_tech="<%= reparations[i].breakdowns_tech %>">
                         <%= reparations[i].id %>
                     </td>
                     <td style="vertical-align: inherit;">
                         <%= reparations[i].reparation_code %>
                     </td>
-                    <td style="vertical-align: inherit;">
-                        <%= reparations[i].device_name %>
+                    <td style="vertical-align: inherit;" align="center">
+                        <%= reparations[i].device_name %> <img src="<%= reparations[i].dtimage %>" alt="Device type" style="width: 35px"> 
                     </td>
                     <td style="vertical-align: inherit;">
                         <%= reparations[i].clientname %> <%= reparations[i].lastname %>
@@ -42,9 +48,11 @@
                     </td>
                     <td style="vertical-align: inherit;">
                         <a href="tel:<%= reparations[i].phone %>"><%= reparations[i].phone %></a>
+                        <a href="tel:<%= reparations[i].phone2 %>"><%= reparations[i].phone2 %></a>
+                        <a href="tel:<%= reparations[i].phone3 %>"><%= reparations[i].phone3 %></a>
                     </td>
-                    <td style="vertical-align: inherit;"><%= reparations[i].created_at.toLocaleString('en').split(",")[0] %></td>
-                    <td style="vertical-align: inherit;"><%= reparations[i].stimate_date.toLocaleString('en').split(",")[0] %></td>
+                    <td style="vertical-align: inherit;"><%= reparations[i].created_at.toLocaleString('en').split(",")[0] %> - <%= tConvert(reparations[i].created_at.toLocaleString().split(" ")[1].substring(0, 5)) %></td>
+                    <td style="vertical-align: inherit;"><%= reparations[i].stimate_date.toLocaleString('en').split(",")[0] %> - <%= tConvert(reparations[i].stimate_hour) %></td>
                     <td align="center" style="vertical-align: inherit;" status="<%= reparations[i].actual_status_id %>">
                         <span class="status status-<%= reparations[i].actual_status_id %>"><%= reparations[i].actual_status %></span>
                     </td>
@@ -75,25 +83,48 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="col-md-6">
-                    <div class="form-row mb-2">
-                        <label for="txtState">Estado</label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id=""><i class="fa fa-map"></i></span>
+                <div class="row" style="padding: 0 15px;">
+                    <div class="col-md-8">
+                            <div class="form-row mb-2">
+                                <label for="txtState">Estado</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-map"></i></span>
+                                    </div>
+                                    <select id="cboStatus" style="width: calc(100% - 44px);" name="actual_status_id">
+                                        <option style="display: none" value="0">Seleccione el estado</option>
+                                        <% for(var i = 0; i < status.length; i++) { %>
+                                        <option value="<%= status[i].id %>">
+                                            <%= status[i].name %>
+                                        </option>
+                                        <% } %>
+                                    </select>
+                                </div>
                             </div>
-                            <select id="cboStatus" style="width: calc(100% - 44px);" name="actual_status_id">
-                                <option style="display: none" value="0">Seleccione el estado</option>
-                                <% for(var i = 0; i < status.length; i++) { %>
-                                <option value="<%= status[i].id %>">
-                                    <%= status[i].name %>
-                                </option>
-                                <% } %>
-                            </select>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-row mb-2">
+                            <label for="txtTotal_paid">Total pagado</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id=""><i class="fa fa-usd"></i></span>
+                                </div>
+                                <input type="number" step="any" class="form-control" value="0.00" name="total_paid"
+                                    id="txtTotal_paid" placeholder="Total pagado">
+                            </div>
                         </div>
                     </div>
                 </div>
-
+                <div class="col-md-12">
+                        <label for="cboBreakdowns">Fallas detectadas en el electrodomestico</label>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id=""><i class="fa fa-free-code-camp"></i></span>
+                            </div>
+                            <select id="cboBreakdowns" name="breakdowns_tech[]" style="width: calc(100% - 45px); height: 36px;" multiple>                              
+                            </select>
+                        </div>
+                    </div>
                 <div class="input-field col-lg-12">
                     <div class="form-group">
                         <label for="txtDiagnostic">Diagnosticos del tecnico</label> <i class="fa fa-exclamation-triangle"></i>
@@ -112,8 +143,11 @@
 
 <% include partials/_footer %>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+
 <script>
     $(document).ready(function () {
+        
         $('#tbl-clients').DataTable({
             "order": [[0, "desc"]],
             "columnDefs": [
@@ -129,6 +163,9 @@
             $('#mode').val(2);
             $('#deviceid').val($(this).attr('uid'));
             var id = $(this).parent().siblings(':eq(0)').text().trim();
+            var total_paid = $(this).parent().siblings(':eq(0)').attr("total_paid");
+            var device_id = $(this).parent().siblings(':eq(0)').attr("device_id");
+            var rep_breakdowns_tech = $(this).parent().siblings(':eq(0)').attr("rep_breakdowns_tech");
             var diagnostic = $(this).parent().siblings(':eq(0)').attr('diagnostic');
             var code = $(this).parent().siblings(':eq(1)').text().trim();
             var name = $(this).parent().siblings(':eq(3)').text().trim();
@@ -136,9 +173,34 @@
             $('.modal-title').text('Editar reparación # '+ id + '-' + code + ', ' + name);
             $('#reparationModal').modal();
             $('#id').val(id);
+            $('#txtTotal_paid').val(total_paid);
             $('#cboStatus').val(status); 
             $('#txtDiagnostic').val(diagnostic);
-            $('select').trigger("chosen:updated");
+            let cboBreakdowns = $('#cboBreakdowns');
+            let htmlBreakdowns = '<option style="display: none" value="0">Seleccione las fallas</option>';
+
+            $.ajax({
+                'url': '/get_devices_types_by_id/' + device_id,
+                'method': 'GET',
+                'dataType': 'json',
+                success: function (response) {
+                    const breakdownArray = response.breakdowns;
+                    var breakdownDbArray = rep_breakdowns_tech.split(','); 
+                    for (let i = 0; i < breakdownArray.length; i++) { // BREAKDOWNS
+                        const breakdown = breakdownArray[i];
+                        htmlBreakdowns += '<option value="' + breakdown.id + '" '+(breakdownDbArray.includes(breakdown.id.toString()) ? 'selected' : '')+' >' + breakdown.name + '</option>';
+                    }
+                    cboBreakdowns.append(htmlBreakdowns);
+                    cboBreakdowns.chosen({
+                        no_results_text: "No se encontraron registros",
+                        placeholder_text_multiple: "Selecciones las fallas detectadas en este electrodomestico"
+                    });
+                    $('select').trigger("chosen:updated");
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            });
         });
 
         $('.btn-save').click(function() {
@@ -147,7 +209,9 @@
                 'method': 'POST',
                 'data': {
                     actual_status_id: $('#cboStatus').val(),
-                    diagnostics: $('#txtDiagnostic').val()
+                    diagnostics: $('#txtDiagnostic').val().trim(),
+                    total_paid: $('#txtTotal_paid').val().trim(),
+                    breakdowns_tech: $('#cboBreakdowns').val()
                 },
                 'dataType': 'json',
                 success: function (response) {
@@ -161,4 +225,8 @@
             });
         });
     });
+
+    $('#reparationModal').on('hidden.bs.modal', function () {
+        $("#cboBreakdowns").text('');  $('select').trigger("chosen:updated");
+    })
 </script>

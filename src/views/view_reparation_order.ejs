@@ -1,3 +1,4 @@
+<% include functions %>
 <!doctype html>
 <html lang="en">
 <head>
@@ -25,11 +26,11 @@
             </p>
             <p class="mb-1 gray-sts">Fecha de creación :
                 <i class="fa fa-calendar" aria-hidden="true"></i>
-                <%= reparation[0].created_at.toISOString().split('T')[0] %>
+                <%= reparation[0].created_at.toLocaleString('en').split(",")[0] %> <i class="fa fa-clock-o" aria-hidden="true"></i> <%= tConvert(reparation[0].created_at.toLocaleString().split(" ")[1].substring(0, 5)) %>
             </p>
             <p class="pb-0 gray-sts">Fecha estimada de visita :
                 <i class="fa fa-calendar" aria-hidden="true"></i>
-                <%= reparation[0].stimate_date.toISOString().split('T')[0] %>
+                <%= reparation[0].stimate_date.toLocaleString('en').split(",")[0] %> <i class="fa fa-clock-o" aria-hidden="true"></i> <%= tConvert(reparation[0].stimate_hour) %>
             </p>
         </div>
     </div>
@@ -134,6 +135,21 @@
         </div>
     </div>
     <hr style="background: black;">
+    <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <p class="mb-1 pull-left">
+                            <strong>Costo de reparación</strong>
+                        </p>
+                        <p class="mb-1 pull-right">
+                            <strong>$<%= reparation[0].total_paid %></strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr style="background: black;">
     <div class="row">
         <div class="col-md-12 text-center">
             <div class="panel panel-default">

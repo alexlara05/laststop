@@ -103,12 +103,34 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-row mb-2">
-                                <label for="txtPhone">Teléfono</label>
+                                <label for="txtPhone">Teléfono principal</label>
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
                                     </div>
-                                    <input type="text" class="form-control" id="txtPhone" placeholder="Teléfono">
+                                    <input type="number" class="form-control" id="txtPhone" placeholder="Teléfono">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtPhone2">Teléfono 2</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
+                                    </div>
+                                    <input type="number" class="form-control" id="txtPhone2" placeholder="Teléfono">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtPhone3">Teléfono 3</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
+                                    </div>
+                                    <input type="number" class="form-control" id="txtPhone3" placeholder="Teléfono">
                                 </div>
                             </div>
                         </div>
@@ -232,7 +254,9 @@
             var txtName = $('#txtName').val().toUpperCase().trim();
             var txtLastName = $('#txtLastName').val().toUpperCase().trim();
             var txtCompany = $('#txtCompany').val().toUpperCase().trim();
-            var txtPhone = $('#txtPhone').val().toUpperCase().trim();
+            var txtPhone = $('#txtPhone').val().trim();
+            var txtPhone2 = $('#txtPhone2').val().trim();
+            var txtPhone3 = $('#txtPhone3').val().trim();
             var txtAddress = $('#txtAddress').val().toUpperCase().trim();
             var txtCity = $('#txtCity').val().toUpperCase().trim();
             var txtApt = $('#txtApt').val().toUpperCase().trim();
@@ -245,6 +269,8 @@
                 company: txtCompany,
                 address: txtAddress,
                 phone: txtPhone,
+                phone2: txtPhone2,
+                phone3: txtPhone3,
                 city: txtCity,
                 comments: txtComments,
                 apt_unit: txtApt,
@@ -364,6 +390,8 @@
                     $('#txtName').val(response.data[0].name);
                     $('#txtLastName').val(response.data[0].lastname);
                     $('#txtPhone').val(response.data[0].phone);
+                    $('#txtPhone2').val(response.data[0].phone2);
+                    $('#txtPhone3').val(response.data[0].phone);
                     $('#txtCompany').val(response.data[0].company);
                     $('#txtAddress').val(response.data[0].address);
                     $('#txtCity').val(response.data[0].city);
@@ -392,4 +420,21 @@
         $('#txtComments').val('');
         $('#states').val('0');
     });
+
+    function maxLengthCheck(object) {
+        if (object.value.length > object.maxLength)
+            object.value = object.value.slice(0, object.maxLength)
+    }
+
+    function isNumeric(evt) {
+        var theEvent = evt || window.event;
+        var key = theEvent.keyCode || theEvent.which;
+        key = String.fromCharCode(key);
+        var regex = /[0-9]|\./;
+        if (!regex.test(key)) {
+            theEvent.returnValue = false;
+            if (theEvent.preventDefault) theEvent.preventDefault();
+        }
+    }
+
 </script>

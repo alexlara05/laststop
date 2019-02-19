@@ -42,7 +42,11 @@ app.use((req, res, next) => {
     app.locals.username = req.session.name;
     res.header("Access-Control-Allow-Origin", "*");
     var queryParamId = req.path.split('/')[2]
-    if (req.path != '/login' && req.method != 'POST' && req.path != '/view_reparation_order/'+queryParamId && req.path != '/public/css/app.css') {
+    if (req.path != '/login' // Add routes here to permit acces to tech users
+    && req.method != 'POST' 
+    && req.path != '/view_reparation_order/'+queryParamId
+    && req.path != '/public/css/app.css' 
+    && req.path != '/get_devices_types_by_id/'+queryParamId) { // end if
         if (!req.session.email && !req.session.userid && !req.session.name && !req.session.isadmin) {
             // VERIFY SESSION VARIABLES
             res.status(400).redirect('/login');
@@ -141,7 +145,7 @@ app.post('/login', function (req, res, next) {
 });
 
 app.get('/tech_reparations', function (req, res, next) {
-    let  sql = 'SELECT reparations.id, reparations.created_at, reparations.reparation_type, reparations.diagnostics, reparations.payment_type, reparations.reparation_code, reparations.actual_status_id, reparations.stimate_date, clients.name clientname, clients.lastname, clients.phone, clients.address, clients.zipcode, clients.city, clients.apt_unit, states.stateid, devices.name device_name, status.name actual_status FROM reparations INNER JOIN clients ON clients.id = reparations.client_id INNER JOIN states ON states.STATEID = clients.state_id INNER JOIN status ON status.id = reparations.actual_status_id INNER JOIN devices ON devices.id = reparations.device_id WHERE user_id = ?; SELECT * FROM status;';
+    let  sql = 'SELECT reparations.id, reparations.created_at, reparations.total_paid, reparations.breakdowns_tech, reparations.device_id, devices_types.image dtimage, reparations.stimate_hour, reparations.reparation_type, reparations.diagnostics, reparations.payment_type, reparations.reparation_code, reparations.actual_status_id, reparations.stimate_date, clients.name clientname, clients.lastname, clients.phone, clients.phone2, clients.phone3, clients.address, clients.zipcode, clients.city, clients.apt_unit, states.stateid, devices.name device_name, status.name actual_status FROM reparations INNER JOIN clients ON clients.id = reparations.client_id INNER JOIN states ON states.STATEID = clients.state_id INNER JOIN status ON status.id = reparations.actual_status_id INNER JOIN devices ON devices.id = reparations.device_id INNER JOIN devices_types ON devices_types.id = reparations.device_type_id WHERE user_id = ?; SELECT * FROM status;';
     req.getConnection((err, conn) => {
         conn.query(sql, [req.session.userid], (err, results) => {
             if (err)
@@ -330,7 +334,7 @@ app.post('/edit_device/:id', function (req, res, next) {
 
 // DEVICES TYPES
 app.get('/devices_types', function (req, res, next) {
-    let  sql = 'SELECT devices_types.id, devices.name device, devices.image, devices_types.name FROM devices_types ';
+    let  sql = 'SELECT devices_types.id, devices.name device, devices.image, devices_types.name, devices_types.image dtimage FROM devices_types ';
     sql += 'INNER JOIN devices ON devices_types.device_id = devices.id;'
     req.getConnection((err, conn) => {
         conn.query(sql, (err, devices_types) => {
@@ -393,7 +397,7 @@ app.post('/delete_device_type/:id', function (req, res, next) {
 
 app.get('/edit_device_type/:id', function (req, res, next) {
     req.getConnection((err, conn) => {
-        conn.query('SELECT id, name, device_id FROM devices_types WHERE id = ?', [req.params.id], (err, user) => {
+        conn.query('SELECT id, name, device_id, image FROM devices_types WHERE id = ?', [req.params.id], (err, user) => {
             if (err)
                 res.json(err);
     
@@ -628,7 +632,7 @@ app.get('/states', function (req, res, next) {
 
 app.get('/edit_client/:id', function (req, res, next) {
     req.getConnection((err, conn) => {
-        conn.query('SELECT id, name, lastname, phone, company, city, zipcode, address, apt_unit, state_id, comments FROM clients WHERE id = ?', [req.params.id], (err, client) => {
+        conn.query('SELECT id, name, lastname, phone, phone2, phone3, company, city, zipcode, address, apt_unit, state_id, comments FROM clients WHERE id = ?', [req.params.id], (err, client) => {
             if (err)
                 res.json(err);
     
@@ -650,7 +654,7 @@ app.post('/edit_client/:id', function (req, res, next) {
 // End CLIENTS
 // REPARATIONS
 app.get('/reparations', function (req, res, next) {
-    let  sql = 'SELECT reparations.id, reparations.created_at, reparations.reparation_type, reparations.payment_type, reparations.reparation_code, reparations.actual_status_id, reparations.stimate_date, clients.name clientname, clients.lastname, clients.phone, clients.address, clients.zipcode, clients.city, clients.apt_unit, states.stateid, devices.name device_name, status.name actual_status FROM reparations INNER JOIN clients ON clients.id = reparations.client_id INNER JOIN states ON states.STATEID = clients.state_id INNER JOIN status ON status.id = reparations.actual_status_id INNER JOIN devices ON devices.id = reparations.device_id;';
+    let  sql = 'SELECT reparations.id, reparations.created_at, reparations.stimate_hour, devices_types.image dtimage, reparations.reparation_type, reparations.payment_type, reparations.reparation_code, reparations.actual_status_id, reparations.stimate_date, clients.name clientname, clients.lastname, clients.phone, clients.phone2, clients.phone3, clients.address, clients.zipcode, clients.city, clients.apt_unit, states.stateid, devices.name device_name, status.name actual_status FROM reparations INNER JOIN clients ON clients.id = reparations.client_id INNER JOIN states ON states.STATEID = clients.state_id INNER JOIN status ON status.id = reparations.actual_status_id INNER JOIN devices ON devices.id = reparations.device_id INNER JOIN devices_types ON devices_types.id = reparations.device_type_id';
     req.getConnection((err, conn) => {
         conn.query(sql, (err, reparations) => {
             if (err)
@@ -754,10 +758,10 @@ app.post('/edit_reparation/:id', function (req, res, next) {
             && formData.breakdowns != []
             ){
             var objBreakdowns = req.body.breakdowns;
+            var objBreakdowns_tech = req.body.breakdowns_tech;
             var strBreakdowns = '';
 
             var reparation_tech = app.locals.reparation_tech;
-
             if(formData.payment_type == 'Garantia') req.body.check_price = 0.00
 
             if(objBreakdowns){
@@ -768,6 +772,13 @@ app.post('/edit_reparation/:id', function (req, res, next) {
                 }
             }
             
+            if(objBreakdowns_tech){
+                for (let i = 0; i < objBreakdowns_tech.length; i++) {
+                    const element = objBreakdowns_tech[i];
+                    strBreakdowns += element + (i + 1 < objBreakdowns_tech.length ? ',' : '');
+                    req.body.breakdowns_tech = strBreakdowns;
+                }
+            }
 
             conn.query('UPDATE reparations set ? WHERE id = ?', [req.body, req.params.id], (err, results) => {
                 if (err)
@@ -801,7 +812,7 @@ app.get('/get_devices_types_by_id/:id', function (req, res, next) {
 
 app.get('/view_reparation_order/:id', function (req, res, next) {
     req.getConnection((err, conn) => {
-        conn.query('SELECT reparations.id, reparations.user_id, reparations.client_id, reparations.breakdowns, clients.phone, status.id status_id, reparations.reparation_type, reparations.payment_type, reparations.check_price, reparations.reparation_code, reparations.created_at, reparations.stimate_date, reparations.device_model, reparations.comments, reparations.diagnostics, status.name status_name, reparations.breakdowns, clients.name client_name, clients.lastname client_last_name, users.id user_id, users.name tech_name, devices.name device_name, devices.image device_image, devices_types.name device_type_name, manufacturers.name manufacturer_name, manufacturers.logo manufacturer_image, clients.address client_addres, clients.city client_city, clients.state_id, clients.apt_unit, clients.zipcode, states.FULLNAME state_fullname FROM clients INNER JOIN reparations ON reparations.client_id = clients.id INNER JOIN users ON reparations.user_id = users.id INNER JOIN devices ON reparations.device_id = devices.id INNER JOIN devices_types ON reparations.device_type_id = devices_types.id INNER JOIN manufacturers ON reparations.manufacturer_id = manufacturers.id INNER JOIN status ON reparations.actual_status_id = status.id INNER JOIN states ON clients.state_id = states.STATEID WHERE reparations.id = ?; SELECT * FROM breakdowns;', 
+        conn.query('SELECT reparations.id, reparations.user_id, reparations.stimate_hour, reparations.total_paid, reparations.client_id, reparations.breakdowns, clients.phone, status.id status_id, reparations.reparation_type, reparations.payment_type, reparations.check_price, reparations.reparation_code, reparations.created_at, reparations.stimate_date, reparations.device_model, reparations.comments, reparations.diagnostics, status.name status_name, reparations.breakdowns_tech, clients.name client_name, clients.lastname client_last_name, users.id user_id, users.name tech_name, devices.name device_name, devices.image device_image, devices_types.name device_type_name, manufacturers.name manufacturer_name, manufacturers.logo manufacturer_image, clients.address client_addres, clients.city client_city, clients.state_id, clients.apt_unit, clients.zipcode, states.FULLNAME state_fullname FROM clients INNER JOIN reparations ON reparations.client_id = clients.id INNER JOIN users ON reparations.user_id = users.id INNER JOIN devices ON reparations.device_id = devices.id INNER JOIN devices_types ON reparations.device_type_id = devices_types.id INNER JOIN manufacturers ON reparations.manufacturer_id = manufacturers.id INNER JOIN status ON reparations.actual_status_id = status.id INNER JOIN states ON clients.state_id = states.STATEID WHERE reparations.id = ?; SELECT * FROM breakdowns;', 
         [req.params.id], (err, results) => {
             if (err)
                 res.json(err);

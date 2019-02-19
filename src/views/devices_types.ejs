@@ -13,9 +13,10 @@
         <table id="tbl-device_types" class="table table-striped table-bordered" style="width:100%">
             <thead>
                 <tr>
-                    <th></th>
                     <th>Id</th>
+                    <th>Eimg</th>
                     <th>Electrodomestico</th>
+                    <th>Timg</th>
                     <th>Tipo</th>
                     <th></th>
                 </tr>
@@ -24,13 +25,16 @@
                 <% for(var i = 0; i < data.length; i++) { %>
                 <tr>
                     <td align="center">
-                        <img src="<%= data[i].image %>" alt="image" style="width: 35px;">
+                        <%= data[i].id %>
                     </td>
                     <td align="center">
-                        <%= data[i].id %>
+                        <img src="<%= data[i].image %>" alt="image" style="width: 35px;">
                     </td>
                     <td>
                         <%= data[i].device %>
+                    </td>
+                    <td>
+                        <img src="<%= data[i].dtimage %>" alt="image" style="width: 35px;">
                     </td>
                     <td>
                         <strong><%= data[i].name %></strong>
@@ -69,7 +73,11 @@
                         <input type="text" class="form-control" id="txtName" placeholder="Nombre">
                     </div>
                     <div class="form-group col-md-12">
-                        <label for="txtImage">Electrodomestico</label>
+                        <label for="txtImage">Url imagen</label>
+                        <input type="text" class="form-control" id="txtImage" placeholder="Imagen, icono">
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="cboDevices">Electrodomestico</label>
                         <select id="devices">
                             <option value="0" style="display: none">Seleccione un electrodomestico</option>
                         </select>
@@ -92,7 +100,7 @@
         $('#tbl-device_types').DataTable({
             "order": [[1, "desc"]],
             "columnDefs": [
-                { "width": "10%", "targets": 0 },
+                { "width": "5%", "targets": 0 },
                 { "width": "5%", "targets": 1 },
                 { "width": "35%", "targets": 2 },
                 { "width": "15%", "targets": 4 }
@@ -128,11 +136,13 @@
         $('.btn-save').click(function () {
             var loader = $('#loading');
             var txtName = $('#txtName').val().trim();
+            var txtImage = $('#txtImage').val().trim();
             var device_id = $('#devices').val();
 
             var data = {
                 name: txtName,
-                device_id: device_id
+                device_id: device_id,
+                image: txtImage
             }
             var mode = $('#mode').val();
             if (txtName == ''){
@@ -233,6 +243,7 @@
                 'dataType': 'json',
                 success: function (response) {
                     var txtName = $('#txtName').val(response.data[0].name);
+                    var txtImage = $('#txtImage').val(response.data[0].image);
                     var cboDevice = $('#devices').val(response.data[0].device_id);
                     console.log(response)
                 },

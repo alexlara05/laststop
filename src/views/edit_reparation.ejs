@@ -127,7 +127,7 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <div class="form-row mb-2">
                     <label for="txtStimateDate">Fecha estimada</label>
                     <div class="input-group mb-3">
@@ -135,6 +135,17 @@
                             <span class="input-group-text" id=""><i class="fa fa-calendar"></i></span>
                         </div>
                         <input type="date" name="stimate_date" value="<%= reparation[0].stimate_date.toISOString().split('T')[0] %>" class="form-control" id="txtStimateDate" required placeholder="Fecha estimada del chequeo">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-row mb-2">
+                    <label for="txtStimateHour">Hora</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id=""><i class="fa fa-clock-o"></i></span>
+                        </div>
+                        <input type="time" name="stimate_hour" class="form-control" value="<%= reparation[0].stimate_hour %>" id="txtStimateHour" required placeholder="Hora estimada del chequeo">
                     </div>
                 </div>
             </div>

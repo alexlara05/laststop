@@ -1,4 +1,5 @@
 <% include partials/_header %>
+<% include functions %>
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
 
 <div class="container">
@@ -34,8 +35,8 @@
                     <td style="vertical-align: inherit;">
                         <%= data[i].reparation_code %>
                     </td>
-                    <td style="vertical-align: inherit;">
-                        <%= data[i].device_name %>
+                    <td style="vertical-align: inherit;" align="center">
+                        <%= data[i].device_name %> <img src="<%= data[i].dtimage %>" alt="Device type" style="width: 35px">     
                     </td>
                     <td style="vertical-align: inherit;">
                         <%= data[i].clientname %> <%= data[i].lastname %>
@@ -45,9 +46,11 @@
                     </td>
                     <td style="vertical-align: inherit;">
                         <a href="tel:<%= data[i].phone %>"><%= data[i].phone %></a>
+                        <a href="tel:<%= data[i].phone2 %>"><%= data[i].phone2 %></a>
+                        <a href="tel:<%= data[i].phone3 %>"><%= data[i].phone3 %></a>
                     </td>
-                    <td style="vertical-align: inherit;"><%= data[i].created_at.toLocaleString('en').split(",")[0] %></td>
-                    <td style="vertical-align: inherit;"><%= data[i].stimate_date.toLocaleString('en').split(",")[0] %></td>
+                    <td style="vertical-align: inherit;"><%= data[i].created_at.toLocaleString('en').split(",")[0] %> - <%= tConvert(data[i].created_at.toLocaleString().split(" ")[1].substring(0, 5)) %></td>
+                    <td style="vertical-align: inherit;"><%= data[i].stimate_date.toLocaleString('en').split(",")[0] %> - <%= tConvert(data[i].stimate_hour) %></td>
                     <td align="center" style="vertical-align: inherit;">
                         <span class="status status-<%= data[i].actual_status_id %>"><%= data[i].actual_status %></span>
                     </td>
