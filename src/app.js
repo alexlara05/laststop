@@ -760,7 +760,6 @@ app.post('/edit_reparation/:id', function (req, res, next) {
             var objBreakdowns = req.body.breakdowns;
             var objBreakdowns_tech = req.body.breakdowns_tech;
             var strBreakdowns = '';
-
             var reparation_tech = app.locals.reparation_tech;
             if(formData.payment_type == 'Garantia') req.body.check_price = 0.00
 
@@ -812,7 +811,7 @@ app.get('/get_devices_types_by_id/:id', function (req, res, next) {
 
 app.get('/view_reparation_order/:id', function (req, res, next) {
     req.getConnection((err, conn) => {
-        conn.query('SELECT reparations.id, reparations.user_id, reparations.stimate_hour, reparations.total_paid, reparations.client_id, reparations.breakdowns, clients.phone, status.id status_id, reparations.reparation_type, reparations.payment_type, reparations.check_price, reparations.reparation_code, reparations.created_at, reparations.stimate_date, reparations.device_model, reparations.comments, reparations.diagnostics, status.name status_name, reparations.breakdowns_tech, clients.name client_name, clients.lastname client_last_name, users.id user_id, users.name tech_name, devices.name device_name, devices.image device_image, devices_types.name device_type_name, manufacturers.name manufacturer_name, manufacturers.logo manufacturer_image, clients.address client_addres, clients.city client_city, clients.state_id, clients.apt_unit, clients.zipcode, states.FULLNAME state_fullname FROM clients INNER JOIN reparations ON reparations.client_id = clients.id INNER JOIN users ON reparations.user_id = users.id INNER JOIN devices ON reparations.device_id = devices.id INNER JOIN devices_types ON reparations.device_type_id = devices_types.id INNER JOIN manufacturers ON reparations.manufacturer_id = manufacturers.id INNER JOIN status ON reparations.actual_status_id = status.id INNER JOIN states ON clients.state_id = states.STATEID WHERE reparations.id = ?; SELECT * FROM breakdowns;', 
+        conn.query('SELECT reparations.id, reparations.user_id, reparations.stimate_hour, reparations.total_paid, reparations.client_id, reparations.breakdowns, clients.phone, clients.phone2, clients.phone3, status.id status_id, reparations.reparation_type, reparations.payment_type, reparations.check_price, reparations.reparation_code, reparations.created_at, reparations.stimate_date, reparations.device_model, reparations.comments, reparations.diagnostics, status.name status_name, reparations.breakdowns_tech, clients.name client_name, clients.lastname client_last_name, users.id user_id, users.name tech_name, devices.name device_name, devices.image device_image, devices_types.name device_type_name, manufacturers.name manufacturer_name, manufacturers.logo manufacturer_image, clients.address client_addres, clients.city client_city, clients.state_id, clients.apt_unit, clients.zipcode, states.FULLNAME state_fullname FROM clients INNER JOIN reparations ON reparations.client_id = clients.id INNER JOIN users ON reparations.user_id = users.id INNER JOIN devices ON reparations.device_id = devices.id INNER JOIN devices_types ON reparations.device_type_id = devices_types.id INNER JOIN manufacturers ON reparations.manufacturer_id = manufacturers.id INNER JOIN status ON reparations.actual_status_id = status.id INNER JOIN states ON clients.state_id = states.STATEID WHERE reparations.id = ?; SELECT * FROM breakdowns;', 
         [req.params.id], (err, results) => {
             if (err)
                 res.json(err);
@@ -820,7 +819,7 @@ app.get('/view_reparation_order/:id', function (req, res, next) {
             res.status(200).render('view_reparation_order', {
                 reparation: results[0],
                 breakdowns: results[1]
-            });
+            }); 
         });
     });
 });

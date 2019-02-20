@@ -9,7 +9,7 @@
 </style>
 <div class="container">
     <div class="top-acc">
-        <h3 class="pull-left">Tabla de reparaciones <a href="#" style="text-transform: capitalize;"><i class="fa fa-user-md" aria-hidden="true"></i> <%= username %></a></h3>
+        <h3 class="pull-left">Listado de reparaciones <a href="#" style="text-transform: capitalize;"><i class="fa fa-user-md" aria-hidden="true"></i> <%= username %></a></h3>
         <div class="clearfix"></div>
     </div>
     <div class="table-responsive">
@@ -51,8 +51,8 @@
                         <a href="tel:<%= reparations[i].phone2 %>"><%= reparations[i].phone2 %></a>
                         <a href="tel:<%= reparations[i].phone3 %>"><%= reparations[i].phone3 %></a>
                     </td>
-                    <td style="vertical-align: inherit;"><%= reparations[i].created_at.toLocaleString('en').split(",")[0] %> - <%= tConvert(reparations[i].created_at.toLocaleString().split(" ")[1].substring(0, 5)) %></td>
-                    <td style="vertical-align: inherit;"><%= reparations[i].stimate_date.toLocaleString('en').split(",")[0] %> - <%= tConvert(reparations[i].stimate_hour) %></td>
+                    <td style="vertical-align: inherit;"><%= reparations[i].created_at.toLocaleString('en') %></td>
+                    <td style="vertical-align: inherit;"><%= reparations[i].stimate_date.toLocaleString('en').split(",")[0] %>, <%= tConvert(reparations[i].stimate_hour) %></td>
                     <td align="center" style="vertical-align: inherit;" status="<%= reparations[i].actual_status_id %>">
                         <span class="status status-<%= reparations[i].actual_status_id %>"><%= reparations[i].actual_status %></span>
                     </td>
@@ -135,7 +135,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary btn-save">Guardar cliente</button>
+                <button type="button" class="btn btn-primary btn-save">Guardar</button>
             </div>
         </div>
     </div>

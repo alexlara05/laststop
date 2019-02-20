@@ -4,7 +4,7 @@
 
 <div class="container">
     <div class="top-acc">
-        <h3 class="pull-left">Tabla de reparaciones</h3>
+        <h3 class="pull-left">Listado de reparaciones</h3>
         <a href="/add_reparation" id="add_reparation" class="add_reparation btn btn-primary pull-right">
             <i class="fa fa-plus-circle"></i> Nueva orden de reparación
         </a>
@@ -49,8 +49,8 @@
                         <a href="tel:<%= data[i].phone2 %>"><%= data[i].phone2 %></a>
                         <a href="tel:<%= data[i].phone3 %>"><%= data[i].phone3 %></a>
                     </td>
-                    <td style="vertical-align: inherit;"><%= data[i].created_at.toLocaleString('en').split(",")[0] %> - <%= tConvert(data[i].created_at.toLocaleString().split(" ")[1].substring(0, 5)) %></td>
-                    <td style="vertical-align: inherit;"><%= data[i].stimate_date.toLocaleString('en').split(",")[0] %> - <%= tConvert(data[i].stimate_hour) %></td>
+                    <td style="vertical-align: inherit;"><%= data[i].created_at.toLocaleString('en') %></td>
+                    <td style="vertical-align: inherit;"><%= data[i].stimate_date.toLocaleString('en').split(",")[0] %>, <%= tConvert(data[i].stimate_hour) %></td>
                     <td align="center" style="vertical-align: inherit;">
                         <span class="status status-<%= data[i].actual_status_id %>"><%= data[i].actual_status %></span>
                     </td>

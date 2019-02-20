@@ -19,14 +19,14 @@
 
     <div class="row">
         <div class="col-md-12">
-            <a href="/tech_reparations"><img src="https://axaserviz.com/app/static/media/logo_last_stop_appliances_color.d0a865ce.png" width="155"></a>
+            <a href="<%= (userrol == 0 ? '/tech_reparations' : '/reparations' ) %>"><img src="https://axaserviz.com/app/static/media/logo_last_stop_appliances_color.d0a865ce.png" width="155"></a>
             <h2>Orden de reparación</h2>
             <p class="mb-1" style="font-size: 24px;">#
                 <%= reparation[0].id %>-<%= reparation[0].reparation_code %>
             </p>
             <p class="mb-1 gray-sts">Fecha de creación :
                 <i class="fa fa-calendar" aria-hidden="true"></i>
-                <%= reparation[0].created_at.toLocaleString('en').split(",")[0] %> <i class="fa fa-clock-o" aria-hidden="true"></i> <%= tConvert(reparation[0].created_at.toLocaleString().split(" ")[1].substring(0, 5)) %>
+                <%= reparation[0].created_at.toLocaleString('en') %>
             </p>
             <p class="pb-0 gray-sts">Fecha estimada de visita :
                 <i class="fa fa-calendar" aria-hidden="true"></i>
@@ -49,10 +49,24 @@
                         </a>
                     </p>
                     <p style="margin: 0;">
-                        <a href="tel:<%= reparation[0].phone %>">
-                            <i class="fa fa-phone-square" aria-hidden="true"></i>
-                            <%= reparation[0].phone %>
-                        </a> <br>
+                        <% if(reparation[0].phone){ %>
+                            <a href="tel:<%= reparation[0].phone %>">
+                                <i class="fa fa-phone-square" aria-hidden="true"></i>
+                                <%= reparation[0].phone %>
+                            </a> <br>
+                        <% } %>
+                        <% if(reparation[0].phone2){ %>
+                            <a href="tel:<%= reparation[0].phone2 %>">
+                                <i class="fa fa-phone-square" aria-hidden="true"></i>
+                                <%= reparation[0].phone2 %>
+                            </a> <br>
+                        <% } %>
+                        <% if(reparation[0].phone3){ %>
+                            <a href="tel:<%= reparation[0].phone3 %>">
+                                <i class="fa fa-phone-square" aria-hidden="true"></i>
+                                <%= reparation[0].phone3 %>
+                            </a> <br>
+                        <% } %>
                     </p>
                 </div>
             </div>
@@ -66,7 +80,7 @@
                     <p class="mb-1 gray-sts">
                         Estado actual <br>
                     </p>
-                    <p class="alert text-uppercase status-<%= reparation[0].status_id %>" style="border-radius: .25rem; color: #FFF;">
+                    <p class="alert text-uppercase status-<%= reparation[0].status_id %>" style="border-radius: .25rem; color: #dcdcdc;">
                         <strong><%= reparation[0].status_name %></strong> <br>
                     </p>
                 </div>
@@ -288,7 +302,7 @@
         </div>
         <div class="row" style="padding: 20px;">
             <div class="col-md-12 text-center">
-                <a href="/tech_reparations" class="btn btn-primary btn-lg"><i class="fa fa-arrow-left" aria-hidden="true"></i> Ir al sistema</a>
+                <a href="<%= (userrol == 0 ? '/tech_reparations' : '/reparations' ) %>" class="btn btn-primary btn-lg"><i class="fa fa-arrow-left" aria-hidden="true"></i> Ir al sistema</a>
             </div>
         </div>
 </div>
