@@ -233,12 +233,34 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-row mb-2">
-                                <label for="txtPhone">Teléfono</label>
+                                <label for="txtPhone">Teléfono principal</label>
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
                                     </div>
-                                    <input type="text" class="form-control" id="txtPhone" placeholder="Teléfono">
+                                    <input type="number" name="phone" class="form-control" id="txtPhone" placeholder="Teléfono">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtPhone2">Teléfono 2</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
+                                    </div>
+                                    <input type="number" name="phone2" class="form-control" id="txtPhone2" placeholder="Teléfono">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtPhone3">Teléfono 3</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
+                                    </div>
+                                    <input type="number" name="phone3" class="form-control" id="txtPhone3" placeholder="Teléfono">
                                 </div>
                             </div>
                         </div>
@@ -442,6 +464,8 @@
         var txtLastName = $('#txtLastName').val().trim();
         var txtCompany = $('#txtCompany').val().trim();
         var txtPhone = $('#txtPhone').val().trim();
+        var txtPhone2 = $('#txtPhone2').val().trim();
+        var txtPhone3 = $('#txtPhone3').val().trim();
         var txtAddress = $('#txtAddress').val().trim();
         var txtCity = $('#txtCity').val().trim();
         var txtApt = $('#txtApt').val().trim();
@@ -454,6 +478,8 @@
             company: txtCompany,
             address: txtAddress,
             phone: txtPhone,
+            phone2: txtPhone2,
+            phone3: txtPhone3,
             city: txtCity,
             comments: txtClientComments,
             apt_unit: txtApt,

@@ -15,13 +15,14 @@
             <thead>
                 <tr>
                     <th>Id</th>
-                    <th>Codigo</th>
                     <th>A reparar</th>
                     <th>Cliente</th>                    
                     <th>Dirección</th>
-                    <th>Teléfono</th>
+                    <th>Teléfonos</th>
                     <th>Fecha Creación</th>
                     <th>Fecha Estimada</th>
+                    <th>Costo chequeo</th>
+                    <th>Costo reparación</th>
                     <th>Estado</th>
                     <th></th>
                 </tr>
@@ -31,9 +32,6 @@
                 <tr>
                     <td align="center" style="vertical-align: inherit;">
                         <%= data[i].id %>
-                    </td>
-                    <td style="vertical-align: inherit;">
-                        <%= data[i].reparation_code %>
                     </td>
                     <td style="vertical-align: inherit;" align="center">
                         <%= data[i].device_name %> <img src="<%= data[i].dtimage %>" alt="Device type" style="width: 35px">     
@@ -51,12 +49,16 @@
                     </td>
                     <td style="vertical-align: inherit;"><%= data[i].created_at.toLocaleString('en') %></td>
                     <td style="vertical-align: inherit;"><%= data[i].stimate_date.toLocaleString('en').split(",")[0] %>, <%= tConvert(data[i].stimate_hour) %></td>
+                    <td style="vertical-align: inherit;"><%= data[i].check_price %></td>
+                    <td style="vertical-align: inherit;"><%= data[i].total_paid %></td>
                     <td align="center" style="vertical-align: inherit;">
                         <span class="status status-<%= data[i].actual_status_id %>"><%= data[i].actual_status %></span>
                     </td>
                     <td align="center" style="vertical-align: inherit;">
                         <a href="/edit_reparation/<%= data[i].id %>" uid="<%= data[i].id %>" class="btn btn-primary btn-edit"><i
                         class="fa fa-pencil" aria-hidden="true"></i></a>
+                        <a href="/view_reparation_order/<%= data[i].id %>" class="btn btn-info btn-view"><i
+                            class="fa fa-info-circle" aria-hidden="true"></i></a>
                     </td>
                 </tr>
 

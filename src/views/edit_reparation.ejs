@@ -233,6 +233,29 @@
                     </select>
                 </div>
             </div>
+            <% if(reparation[0].breakdowns_tech != null){ %>
+            <div class="col-md-12">
+                <label for="cboBreakdowns">Fallas detectedas por el tecnico</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id=""><i class="fa fa-free-code-camp"></i></span>
+                    </div>
+                    <select id="cboBreakdowns" name="breakdowns_tech[]" style="width: calc(100% - 45px); height: 36px;" multiple>
+                        <option style="display: none" value="0">Seleccione</option>
+                        <% for(var i = 0; i < breakdowns.length; i++) { %>
+                            <% if(breakdowns[i].device_id == reparation[0].device_id){ %>
+                                <% var breakdownDbArray = reparation[0].breakdowns_tech.split(','); %>
+
+                                <option value="<%= breakdowns[i].id %>" <%= (breakdownDbArray.includes(breakdowns[i].id.toString()) ? 'selected' : '') %>>
+                                    <%= breakdowns[i].name %>  
+                                </option>
+
+                            <% } %>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+            <% } %>
             <div class="input-field col-lg-12">
                 <div class="form-group">
                     <label for="txtComments">Comentarios</label> <i class="fa fa-commenting"></i>
@@ -290,12 +313,34 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-row mb-2">
-                                <label for="txtPhone">Teléfono</label>
+                                <label for="txtPhone">Teléfono principal</label>
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
                                     </div>
-                                    <input type="text" class="form-control" id="txtPhone" placeholder="Teléfono" onkeypress="return isNumeric(event)" oninput="maxLengthCheck(this)" maxlength="10" min="1" max="9">
+                                    <input type="number" name="phone" class="form-control" id="txtPhone" placeholder="Teléfono">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtPhone2">Teléfono 2</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
+                                    </div>
+                                    <input type="number" name="phone2" class="form-control" id="txtPhone2" placeholder="Teléfono">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row mb-2">
+                                <label for="txtPhone3">Teléfono 3</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id=""><i class="fa fa-phone"></i></span>
+                                    </div>
+                                    <input type="number" name="phone3" class="form-control" id="txtPhone3" placeholder="Teléfono">
                                 </div>
                             </div>
                         </div>
@@ -504,6 +549,8 @@
         var txtLastName = $('#txtLastName').val().trim();
         var txtCompany = $('#txtCompany').val().trim();
         var txtPhone = $('#txtPhone').val().trim();
+        var txtPhone2 = $('#txtPhone2').val().trim();
+        var txtPhone3 = $('#txtPhone3').val().trim();
         var txtAddress = $('#txtAddress').val().trim();
         var txtCity = $('#txtCity').val().trim();
         var txtApt = $('#txtApt').val().trim();
@@ -516,6 +563,8 @@
             company: txtCompany,
             address: txtAddress,
             phone: txtPhone,
+            phone2: txtPhone2,
+            phone3: txtPhone3,
             city: txtCity,
             comments: txtClientComments,
             apt_unit: txtApt,
