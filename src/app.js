@@ -28,11 +28,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Middlewares
 app.use(morgan('dev')); // watching file changes
 app.use(mySqlConnection(mysql, {
-    host: 'localhost',
-    user: 'root',
-    password: '123456',
+    host: 'us-cdbr-iron-east-03.cleardb.net',
+    user: 'be09fc7f79c145',
+    password: 'a0b229e9',
     port: 3306,
-    database: 'laststop',
+    database: 'heroku_e6473225eb891d2',
     multipleStatements: true
 }, 'single'));
 
