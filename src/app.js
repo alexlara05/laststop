@@ -850,7 +850,7 @@ app.post("/send_sms", function (req, res, next) {
 
     const from = "12064664231";
     const to = req.body.phone;
-    const text = "Estimado "+req.body.tech + ' se le ha asignado la orden de reparación, #'+req.body.id + ' click al link para ver detalles http://laststopapp.com/view_reparation_order/'+req.body.id;
+    const text = "Estimado "+req.body.tech + ' se le ha asignado la orden de reparación, #'+req.body.id + ' click al link para ver detalles https://laststop.herokuapp.com/view_reparation_order/'+req.body.id;
 
     nexmo.message.sendSms(from, '1'+to, text);
 });
